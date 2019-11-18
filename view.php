@@ -1,0 +1,5 @@
+<?php generateHeader(); ?>
+
+
+
+<?php generateFooter() ?>
