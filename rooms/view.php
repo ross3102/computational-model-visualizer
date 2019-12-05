@@ -22,6 +22,7 @@
 
     <div class="modal" id="create-modal">
         <div class="modal-content">
+            <h4 class="modal-header">Create Room</h4>
             <form action="./index.php" method="post" id="create-form">
                 <input type="hidden" name="action" value="create_room">
                 <div class="input-field">
@@ -42,6 +43,7 @@
 
     <div class="modal" id="join-modal">
         <div class="modal-content">
+            <h4 class="modal-header">Join Room</h4>
             <form action="./index.php" method="post" id="join-form">
                 <input type="hidden" name="action" value="join_room">
                 <div class="input-field">
