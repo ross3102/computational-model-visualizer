@@ -111,3 +111,41 @@ function join_room($user_id, $room_code) {
         exit();
     }
 }
+
+function get_users_by_room($room_id) {
+    global $db;
+
+    try {
+        $query = "select * from user, room_user_xref
+              where room_id = :room_id
+              and user.user_id = room_user_xref.user_id";
+
+        $statement = $db->prepare($query);
+        $statement->bindValue(":room_id", $room_id);
+        $statement->execute();
+        $result = $statement->fetchAll();
+        $statement->closeCursor();
+        return $result;
+    } catch (PDOException $e) {
+        echo $e;
+        exit();
+    }
+}
+function update_hash($room_id, $hash) {
+    global $db;
+
+    try {
+        $query = "update room
+                  set room_cde = :hash
+                  where room_id = :room_id";
+
+        $statement = $db->prepare($query);
+        $statement->bindValue(":hash", $hash);
+        $statement->bindValue(":room_id", $room_id);
+        $statement->execute();
+        $statement->closeCursor();
+    } catch (PDOException $e) {
+        echo $e;
+        exit();
+    }
+}
