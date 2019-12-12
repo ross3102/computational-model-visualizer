@@ -6,7 +6,7 @@
                 <h3 class="center-align">My Rooms</h3>
                 <div class="collection">
                     <?php foreach ($rooms as $room) { ?>
-                        <div class="collection-item"><?php echo $room["name"] ?></div>
+                        <div class="collection-item"><?php echo $room["name"] ?><a class="right" href="#" onclick="showDesc('<?php echo addslashes($room["name"]) ?>', '<?php echo addslashes($room["room_desc"]) ?>')"><i class="material-icons black-text">info</i></a></div>
                     <?php } ?>
                 </div>
             </div>
@@ -22,6 +22,7 @@
 
     <div class="modal" id="create-modal">
         <div class="modal-content">
+            <h4 class="modal-header">Create Room</h4>
             <form action="./index.php" method="post" id="create-form">
                 <input type="hidden" name="action" value="create_room">
                 <div class="input-field">
@@ -42,6 +43,7 @@
 
     <div class="modal" id="join-modal">
         <div class="modal-content">
+            <h4 class="modal-header">Join Room</h4>
             <form action="./index.php" method="post" id="join-form">
                 <input type="hidden" name="action" value="join_room">
                 <div class="input-field">
@@ -56,4 +58,22 @@
         </div>
     </div>
 
+    <div class="modal" id="info-modal">
+        <div class="modal-content">
+            <h4 class="modal-header"></h4>
+            <p id="info-text"></p>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-close waves-effect waves-green btn-flat red-text">Close</a>
+        </div>
+    </div>
+
 <?php generateFooter() ?>
+
+<script>
+    function showDesc(name, desc) {
+        $("#info-modal .modal-header").html(name);
+        $("#info-modal #info-text").html(desc);
+        $("#info-modal").modal("open");
+    }
+</script>
