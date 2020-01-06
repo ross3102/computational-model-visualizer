@@ -13,7 +13,7 @@ if (!isset($action)) {
 switch ($action) {
     case "join_room":
         $room_code = filter_input(INPUT_POST, "room_code");
-        join_room($user_id, $room_code);
+        join_room($user_id, hexdec($room_code));
         include "waiting.php";
         break;
     case "create_room":

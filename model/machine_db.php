@@ -112,11 +112,30 @@ function join_room($user_id, $room_code) {
     }
 }
 
+function get_room_by_id($room_id) {
+    global $db;
+
+    try {
+        $query = "select * from room
+              where room_id = :room_id";
+
+        $statement = $db->prepare($query);
+        $statement->bindValue(":room_id", $room_id);
+        $statement->execute();
+        $result = $statement->fetch();
+        $statement->closeCursor();
+        return $result;
+    } catch (PDOException $e) {
+        echo $e;
+        exit();
+    }
+}
+
 function get_users_by_room($room_id) {
     global $db;
 
     try {
-        $query = "select * from user, room_user_xref
+        $query = "select username from user, room_user_xref
               where room_id = :room_id
               and user.user_id = room_user_xref.user_id";
 
@@ -131,12 +150,33 @@ function get_users_by_room($room_id) {
         exit();
     }
 }
+
+function get_questions_by_room($room_id) {
+    global $db;
+
+    try {
+        $query = "select * from question q, room r
+              where r.room_id = :room_id
+              and q.room_id = r.room_id";
+
+        $statement = $db->prepare($query);
+        $statement->bindValue(":room_id", $room_id);
+        $statement->execute();
+        $result = $statement->fetchAll();
+        $statement->closeCursor();
+        return $result;
+    } catch (PDOException $e) {
+        echo $e;
+        exit();
+    }
+}
+
 function update_hash($room_id, $hash) {
     global $db;
 
     try {
         $query = "update room
-                  set room_cde = :hash
+                  set room_code = :hash
                   where room_id = :room_id";
 
         $statement = $db->prepare($query);
