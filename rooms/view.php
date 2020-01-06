@@ -6,7 +6,7 @@
                 <h3 class="center-align">My Rooms</h3>
                 <div class="collection">
                     <?php foreach ($rooms as $room) { ?>
-                        <div class="collection-item"><?php echo $room["name"] ?><a class="right" href="#" onclick="showDesc('<?php echo addslashes($room["name"]) ?>', '<?php echo addslashes($room["room_desc"]) ?>')"><i class="material-icons black-text">info</i></a></div>
+                        <div class="collection-item"><?php echo $room["name"] ?><a class="right" href="#" onclick="showDesc(<?php echo $room["room_id"] ?>, '<?php echo addslashes($room["name"]) ?>', '<?php echo addslashes($room["room_desc"]) ?>')"><i class="material-icons black-text">info</i></a></div>
                     <?php } ?>
                 </div>
             </div>
@@ -53,27 +53,43 @@
             </form>
         </div>
         <div class="modal-footer">
-            <a href="#!" class="modal-close waves-effect waves-green btn-flat green-text" onclick="$('#join-form').submit()">Join</a>
-            <a href="#!" class="modal-close waves-effect waves-green btn-flat red-text">Close</a>
+            <a class="modal-close waves-effect waves-green btn-flat green-text" onclick="$('#join-form').submit()">Join</a>
+            <a class="modal-close waves-effect waves-green btn-flat red-text">Close</a>
         </div>
     </div>
 
     <div class="modal" id="info-modal">
         <div class="modal-content">
-            <h4 class="modal-header"></h4>
-            <p id="info-text"></p>
+            <h4 class="modal-header">Edit Room Info</h4>
+            <form action="./index.php" method="post" id="edit-form">
+                <input type="hidden" name="action" value="edit_room">
+                <input type="hidden" name="room_id" id="room-id">
+                <div class="input-field">
+                    <input type="text" name="room_name" id="room-name">
+                    <label for="room-name">Room Name</label>
+                </div>
+                <div class="input-field">
+                    <textarea class="materialize-textarea" name="room_desc" id="room-desc"></textarea>
+                    <label for="room-desc">Room Description</label>
+                </div>
+            </form>
+
         </div>
         <div class="modal-footer">
-            <a href="#!" class="modal-close waves-effect waves-green btn-flat red-text">Close</a>
+            <a class="waves-effect waves-light btn-flat green-text" onclick="$('#edit-form').submit()">Update</a>
+            <a class="modal-close waves-effect waves-green btn-flat red-text">Close</a>
         </div>
     </div>
 
 <?php generateFooter() ?>
 
 <script>
-    function showDesc(name, desc) {
-        $("#info-modal .modal-header").html(name);
-        $("#info-modal #info-text").html(desc);
+    function showDesc(id, name, desc) {
+        $("#info-modal #room-id").val(id);
+        $("#info-modal #room-name").val(name);
+        $("#info-modal #room-desc").val(desc);
+
         $("#info-modal").modal("open");
+        M.updateTextFields();
     }
 </script>

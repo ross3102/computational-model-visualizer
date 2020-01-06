@@ -20,6 +20,15 @@ switch ($action) {
         $name = filter_input(INPUT_POST, "room_name");
         $desc = filter_input(INPUT_POST, "room_desc");
         create_room($user_id, $name, $desc);
+        header("Location: ./index.php");
+        break;
+    case "edit_room":
+        $id = filter_input(INPUT_POST, "room_id");
+        $name = filter_input(INPUT_POST, "room_name");
+        $desc = filter_input(INPUT_POST, "room_desc");
+        update_room($id, $name, $desc);
+        header("Location: ./index.php");
+        break;
     case "list_rooms":
         $rooms = get_rooms($user_id);
         include "./view.php";

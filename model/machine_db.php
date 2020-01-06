@@ -17,6 +17,26 @@ function get_machines() {
     }
 }
 
+function update_room($id, $name, $desc){
+    global $db;
+    try {
+        $query = "UPDATE room
+                    SET room_desc = :desc,
+                    name = :name
+                    WHERE room_id = :room_id";
+        $statement = $db->prepare($query);
+        $statement->bindValue(":desc", $desc);
+        $statement->bindValue(":name", $name);
+        $statement->bindValue(":room_id", $id);
+        $statement->execute();
+        $statement->closeCursor();
+    } catch (PDOException $e){
+        echo $e;
+        exit();
+    }
+}
+
+
 function get_machine_by_id($machine_id) {
     global $db;
 
