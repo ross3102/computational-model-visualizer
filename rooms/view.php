@@ -6,7 +6,7 @@
                 <h3 class="center-align">My Rooms</h3>
                 <div class="collection">
                     <?php foreach ($rooms as $room) { ?>
-                        <div class="collection-item" style="cursor: pointer;" onclick="location.href='../room_view/index.php?room_id=<?php echo $room["room_id"] ?>'"><?php echo $room["name"] ?><a class="right" href="#" onclick="event.stopPropagation(); showDesc('<?php echo addslashes($room["name"]) ?>', '<?php echo addslashes($room["room_desc"]) ?>')"><i class="material-icons black-text">info</i></a></div>
+                        <div class="collection-item" style="cursor: pointer;" onclick="location.href='../room_view/index.php?room_id=<?php echo $room["room_id"] ?>'"><?php echo $room["name"] ?><a class="right" href="#" onclick="event.stopPropagation(); showDesc(<?php echo $room["room_id"] ?>, '<?php echo addslashes($room["name"]) ?>', '<?php echo addslashes($room["room_desc"]) ?>')"><i class="material-icons black-text">info</i></a></div>
                     <?php } ?>
                 </div>
             </div>
