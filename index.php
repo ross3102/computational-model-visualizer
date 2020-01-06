@@ -2,4 +2,4 @@
 
 require_once "main.php";
 
-include "./view.php";
+header("Location: rooms/index.php"); // temp
