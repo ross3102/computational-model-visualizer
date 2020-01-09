@@ -151,6 +151,27 @@ function get_room_by_id($room_id) {
     }
 }
 
+function get_all_hashes() {
+    global $db;
+
+    try {
+        $query = "select room_code from room";
+
+        $statement = $db->prepare($query);
+        $statement->execute();
+        $result = $statement->fetchAll();
+        $statement->closeCursor();
+
+        $new = array();
+        foreach ($result as $hash)
+            array_push($new, $hash["room_code"]);
+        return $new;
+    } catch (PDOException $e) {
+        echo $e;
+        exit();
+    }
+}
+
 function get_users_by_room($room_id) {
     global $db;
 

@@ -19,7 +19,14 @@ switch ($action) {
         break;
     case "create":
         $room_id = filter_input(INPUT_GET, "room_id");
-        $hash = hexdec(bin2hex(random_bytes(3)));
+        $used_hashes = get_all_hashes();
+
+        $NUM_DIGITS = 6;
+
+        do {
+            $hash = rand(pow(16, $NUM_DIGITS-1), pow(16, $NUM_DIGITS) - 1);
+        } while (in_array($hash, $used_hashes));
+
         update_hash($room_id, $hash);
         header("Location: ./index.php?action=show_users&room_id=" . $room_id);
         break;

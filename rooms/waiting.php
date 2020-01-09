@@ -19,7 +19,7 @@ generateHeader(""); ?>
 
     function dot() {
         num = (num + 1) % 4;
-        $("#dots").html("&nbsp;" + (".".repeat(num)));
+        $("#dots").html("&nbsp;" + ("•".repeat(num)));
     }
 
     setInterval(dot, 200);
