@@ -30,6 +30,19 @@ switch ($action) {
         update_hash($room_id, $hash);
         header("Location: ./index.php?action=show_users&room_id=" . $room_id);
         break;
+
+    case "add_question":
+        $room_id = filter_input(INPUT_POST, "room_id");
+        $question_name = filter_input(INPUT_POST, "question_name");
+        add_question($room_id, $question_name);
+        header("Location: ./index.php?room_id=" . $room_id);
+        break;
+
+    case "delete_question":
+        $room_id = filter_input(INPUT_GET, "room_id");
+        $question_id = filter_input(INPUT_GET, "question_id");
+        delete_question($question_id);
+        header("Location: ./index.php?room_id=" . $room_id);
     case "show_users":
         $room_id = filter_input(INPUT_GET, "room_id");
         $room = get_room_by_id($room_id);

@@ -4,7 +4,7 @@ require_once dirname(__FILE__) . "/config.php";
 
 require_once dirname(__FILE__) . "/model/machine_db.php";
 
-$user_id = 21;
+$user_id = 31;
 $user = get_user_by_id($user_id);
 
 function generateHeader($head="") {
@@ -34,7 +34,7 @@ function generateFooter($scripts="") {
     global $web_root;
 
     echo "
-                </div>
+             </div>
             </main>
             <script src='/" .$web_root . "/js/jquery.min.js'></script>
             <script src='/" .$web_root . "/js/materialize.min.js'></script>

@@ -16,6 +16,37 @@ function get_machines() {
         exit();
     }
 }
+function add_question ($id, $question){
+    global $db;
+    try {
+        $query = "INSERT INTO question (room_id, text)
+              VALUES(:id, :question)";
+        $statement = $db->prepare($query);
+        $statement->bindValue(":id", $id);
+        $statement->bindValue(":question", $question);
+        $statement->execute();
+        $statement->closeCursor();
+    }
+    catch(PDOException $e){
+        echo $e;
+        exit();
+    }
+
+}
+
+function delete_question($question_id){
+    global $db;
+    try{
+        $query = "DELETE FROM question WHERE question_id = :question_id";
+        $statement = $db->prepare($query);
+        $statement->bindValue(":question_id", $question_id);
+        $statement->execute();
+        $statement->closeCursor();
+    }catch (PDOException $e) {
+        echo $e;
+        exit();
+    }
+}
 
 function update_room($id, $name, $desc){
     global $db;
