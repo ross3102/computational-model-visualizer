@@ -4,11 +4,11 @@ require_once dirname(__FILE__) . "/config.php";
 
 require_once dirname(__FILE__) . "/model/machine_db.php";
 
-$user_id = 31;
+$user_id = 21;
 $user = get_user_by_id($user_id);
 
 function generateHeader($head="") {
-    global $web_root;
+    global $web_root, $user;
 
     echo "
     <!DOCTYPE html>
@@ -23,6 +23,16 @@ function generateHeader($head="") {
             <!--Let browser know website is optimized for mobile-->
             <meta name='viewport' content='width=device-width, initial-scale=1.0'/>
         " . $head . " </head>
+        <body class='pink lighten-3'>
+            <nav class='blue'>
+            <div class='nav-wrapper' style='padding: 0 30px;'>
+                <a href='#' class='brand-logo'>CMV</a>
+                <ul id='nav-mobile' class='right hide-on-med-and-down'>
+                    <li><a href='#'>Hello, " . $user["username"] . "</a></li>
+                </ul>
+            </div>
+            </nav>
+        
         <body class='pink lighten-3'>
             <main>
                 <div class='container z-depth-3 white' id='main-box'>

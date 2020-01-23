@@ -261,3 +261,25 @@ function update_hash($room_id, $hash) {
         exit();
     }
 }
+
+function create_machine($type_cde, $creator_id, $question_id, $start_state, $transitions, $end_state) {
+    global $db;
+
+    try {
+        $query = "insert into machine (type_cde, creator_id, question_id, start_state, transitions, end_state) 
+                  values (:type_cde, :creator_id, :question_id, :start_state, :transitions, :end_state)";
+
+        $statement = $db->prepare($query);
+        $statement->bindValue(":type_cde", $type_cde);
+        $statement->bindValue(":creator_id", $creator_id);
+        $statement->bindValue(":question_id", $question_id);
+        $statement->bindValue(":start_state", $start_state);
+        $statement->bindValue(":transitions", $transitions);
+        $statement->bindValue(":end_state", $end_state);
+        $statement->execute();
+        $statement->closeCursor();
+    } catch (PDOException $e) {
+        echo $e;
+        exit();
+    }
+}
