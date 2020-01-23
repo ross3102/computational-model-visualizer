@@ -23,7 +23,7 @@ function generateHeader($head="") {
             <!--Let browser know website is optimized for mobile-->
             <meta name='viewport' content='width=device-width, initial-scale=1.0'/>
         " . $head . " </head>
-        <body class='deep-purple lighten-3'>
+        <body class='pink lighten-3'>
             <main>
                 <div class='container z-depth-3 white' id='main-box'>
           
