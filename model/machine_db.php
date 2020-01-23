@@ -261,7 +261,6 @@ function update_hash($room_id, $hash) {
         exit();
     }
 }
-
 function create_machine($type_cde, $creator_id, $question_id, $start_state, $transitions, $end_state) {
     global $db;
 
@@ -279,6 +278,35 @@ function create_machine($type_cde, $creator_id, $question_id, $start_state, $tra
         $statement->execute();
         $statement->closeCursor();
     } catch (PDOException $e) {
+        echo $e;
+        exit();
+    }
+}
+function delete_student($student_id, $room_id) {
+    global $db;
+
+    try {
+        $query = "delete from room_user_xref where room_id = :room_id and user_id = :user_id";
+        $statement = $db->prepare($query);
+        $statement->bindValue(":user_id", $student_id);
+        $statement->bindValue(":room_id", $room_id);
+        $statement->execute();
+        $statement->closeCursor();
+    } catch(PDOException $e) {
+        echo $e;
+        exit();
+    }
+}
+function close_room($room_id) {
+    global $db;
+
+    try {
+        $query = "delete from room_user_xref where room_id = :room_id; update room set room_code = null where room_id = :room_id";
+        $statement = $db->prepare($query);
+        $statement->bindValue(":room_id", $room_id);
+        $statement->execute();
+        $statement->closeCursor();
+    } catch(PDOException $e) {
         echo $e;
         exit();
     }
