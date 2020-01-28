@@ -29,6 +29,11 @@ switch ($action) {
         update_room($id, $name, $desc);
         header("Location: ./index.php");
         break;
+    case "close_room":
+        $room_id = filter_input(INPUT_GET, "room_id");
+        close_room($room_id);
+        header("Location: ./index.php");
+        break;
     case "list_rooms":
         $rooms = get_rooms($user_id);
         include "./view.php";

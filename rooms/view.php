@@ -6,8 +6,12 @@
                 <h3 class="center-align">My Rooms</h3>
                 <div class="collection">
                     <?php foreach ($rooms as $room) { ?>
-                        <div class="collection-item" style="cursor: pointer;" onclick="location.href='../room_view/index.php?room_id=<?php echo $room["room_id"] ?>'"><?php echo $room["name"] ?><a class="right" href="#" onclick="event.stopPropagation(); showDesc(<?php echo $room["room_id"] ?>, '<?php echo addslashes($room["name"]) ?>', '<?php echo addslashes($room["room_desc"]) ?>')"><i class="material-icons black-text">info</i></a></div>
-                    <?php } ?>
+                        <div class="collection-item" style="cursor: pointer;" onclick="location.href='../room_view/index.php?room_id=<?php echo $room["room_id"] ?>'"><?php echo $room["name"] ?><a class="right" href="#" onclick="event.stopPropagation(); showDesc(<?php echo $room["room_id"] ?>, '<?php echo addslashes($room["name"]) ?>', '<?php echo addslashes($room["room_desc"]) ?>')"><i class="material-icons black-text">info</i></a>
+                            <?php if ($room["room_code"] != null) { ?>
+                                <i style="cursor: pointer; margin-right:2%" class="red-text material-icons right" onclick="event.stopPropagation(); location.href='./index.php?action=close_room&room_id=<?php echo $room["room_id"] ?>'">close</i>
+                            <?php }  ?>
+                        </div>
+                        <?php } ?>
                 </div>
             </div>
         </div>
