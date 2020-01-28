@@ -1,0 +1,14 @@
+{
+    "name": "ross3102/computational-model-visualizer",
+    "type": "project",
+    "require": {
+        "google/auth": "^1.6",
+        "google/apiclient": "^2.4"
+    },
+    "authors": [
+        {
+            "name": "Ross3102",
+            "email": "rosnew20@bergen.org"
+        }
+    ]
+}
