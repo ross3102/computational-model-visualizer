@@ -27,7 +27,7 @@ function generateHeader($head="") {
         <body class=''>
             <nav class='blue'>
             <div class='nav-wrapper' style='padding: 0 30px;'>
-                <a href='#' class='brand-logo'>CMV</a>
+                <a href='/" . $web_root . "' class='brand-logo'>CMV</a>
                 <ul id='nav-mobile' class='right hide-on-med-and-down'>
                     <li><a href='#'>Hello, " . $user["username"] . "</a></li>
                 </ul>

@@ -12,10 +12,10 @@ generateHeader(""); ?>
             <?php } ?>
         </ul>
         <div class="center-align">
-            <div href="#add-questionm" class="btn btn-large btn-floating waves-effect waves-light modal-trigger"><i class="material-icons">add</i></div>
+            <a href="#add-questionm" class="btn btn-large btn-floating waves-effect waves-light blue lighten-1 modal-trigger"><i class="material-icons">add</i></a>
             <br>
             <br>
-            <a href="./index.php?action=create&room_id=<?php echo $room_id ?>" class="btn btn-large waves-effect waves-light">Open Room</a>
+            <a href="./index.php?action=create&room_id=<?php echo $room_id ?>" class="btn btn-large waves-effect waves-light blue lighten-1"><?php echo $room["room_code"] == null ? "Open Room": "View Room" ?></a>
 
             <div class="modal" id="add-questionm">
                 <div class="modal-content">

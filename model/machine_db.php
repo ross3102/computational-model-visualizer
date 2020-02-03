@@ -104,6 +104,27 @@ function get_rooms($user_id) {
     }
 }
 
+function get_joined_rooms($user_id) {
+    global $db;
+
+    try {
+        $query = "SELECT *
+                    FROM room_user_xref x, room r  
+                    WHERE x.room_id = r.room_id
+                    AND user_id = :user_id";
+
+        $statement = $db->prepare($query);
+        $statement->bindValue(":user_id", $user_id);
+        $statement->execute();
+        $result = $statement->fetchAll();
+        $statement->closeCursor();
+        return $result;
+    } catch (PDOException $e) {
+        echo $e;
+        exit();
+    }
+}
+
 function get_user_by_id($user_id) {
     global $db;
 
@@ -235,6 +256,45 @@ function get_questions_by_room($room_id) {
         $statement->bindValue(":room_id", $room_id);
         $statement->execute();
         $result = $statement->fetchAll();
+        $statement->closeCursor();
+        return $result;
+    } catch (PDOException $e) {
+        echo $e;
+        exit();
+    }
+}
+
+function get_questions_by_room_code($room_code) {
+    global $db;
+
+    try {
+        $query = "select * from question q, room r
+              where r.room_code = :room_code
+              and q.room_id = r.room_id";
+
+        $statement = $db->prepare($query);
+        $statement->bindValue(":room_code", $room_code);
+        $statement->execute();
+        $result = $statement->fetchAll();
+        $statement->closeCursor();
+        return $result;
+    } catch (PDOException $e) {
+        echo $e;
+        exit();
+    }
+}
+
+function get_question_by_id($question_id) {
+    global $db;
+
+    try {
+        $query = "select * from question q
+              where question_id = :question_id";
+
+        $statement = $db->prepare($query);
+        $statement->bindValue(":question_id", $question_id);
+        $statement->execute();
+        $result = $statement->fetch();
         $statement->closeCursor();
         return $result;
     } catch (PDOException $e) {

@@ -1,5 +1,7 @@
 <?php generateHeader(); ?>
 
+<h4 style="margin: 2px"><?php echo $question["text"] ?></h4>
+
 <div class="row" style="height: 100%;">
     <div class="col s9" id="canvas-container" style="height: 100%;">
         <canvas id="canvas" height="500" width="600" style="border: 1px solid black"></canvas>
@@ -64,7 +66,7 @@
 
     function resizeCanvas() {
         ctx.canvas.width  = $("#canvas-container").width();
-        ctx.canvas.height = $("#canvas-container").height();
+        ctx.canvas.height = $("#canvas-container").height() - $("h4").height() - 2;
     }
 
     function draw() {

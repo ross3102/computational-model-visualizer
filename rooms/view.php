@@ -3,15 +3,26 @@
     <div class="row" style="height: 100%;">
         <div class="col s9">
             <div class="container">
-                <h3 class="center-align">My Rooms</h3>
-                <div class="collection">
-                    <?php foreach ($rooms as $room) { ?>
-                        <div class="collection-item" style="cursor: pointer;" onclick="location.href='../room_view/index.php?room_id=<?php echo $room["room_id"] ?>'"><?php echo $room["name"] ?><a class="right" href="#" onclick="event.stopPropagation(); showDesc(<?php echo $room["room_id"] ?>, '<?php echo addslashes($room["name"]) ?>', '<?php echo addslashes($room["room_desc"]) ?>')"><i class="material-icons black-text">info</i></a>
-                            <?php if ($room["room_code"] != null) { ?>
-                                <i style="cursor: pointer; margin-right:2%" class="red-text material-icons right" onclick="event.stopPropagation(); location.href='./index.php?action=close_room&room_id=<?php echo $room["room_id"] ?>'">close</i>
-                            <?php }  ?>
-                        </div>
+                <div class="section">
+                    <h3 class="center-align">My Rooms</h3>
+                    <div class="collection">
+                        <?php foreach ($rooms as $room) { ?>
+                            <div class="collection-item" style="cursor: pointer;" onclick="location.href='../room_view/index.php?room_id=<?php echo $room["room_id"] ?>'"><?php echo $room["name"] ?><a class="right" href="#" onclick="event.stopPropagation(); showDesc(<?php echo $room["room_id"] ?>, '<?php echo addslashes($room["name"]) ?>', '<?php echo addslashes($room["room_desc"]) ?>')"><i class="material-icons black-text">info</i></a>
+                                <?php if ($room["room_code"] != null) { ?>
+                                    <i style="cursor: pointer; margin-right:2%" class="red-text material-icons right" onclick="event.stopPropagation(); location.href='./index.php?action=close_room&room_id=<?php echo $room["room_id"] ?>'">close</i>
+                                <?php }  ?>
+                            </div>
+                            <?php } ?>
+                    </div>
+                </div>
+                <div class="divider"></div>
+                <div class="section">
+                    <h3 class="center-align">My Joined Rooms</h3>
+                    <div class="collection">
+                        <?php foreach ($joined_rooms as $room) { ?>
+                            <div class="collection-item" style="cursor: pointer;" onclick="location.href='./index.php?action=join_room_again&room_code=<?php echo $room["room_code"] ?>'"><?php echo $room["name"] ?></div>
                         <?php } ?>
+                    </div>
                 </div>
             </div>
         </div>
@@ -19,7 +30,7 @@
             <div class="row">
                 <a href="#create-modal" class="col s12 btn btn-large blue lighten-1 waves-effect waves-light modal-trigger" style="margin-bottom: 40px;">Create</a>
                 <a href="#join-modal" class="col s12 btn btn-large blue lighten-1 waves-effect waves-light modal-trigger" style="margin-bottom: 40px;">Join</a>
-                <a class="col s12 btn btn-large blue lighten-1 waves-effect waves-light">Editor</a>
+                <a onclick="location.href='../load_machine'" class="col s12 btn btn-large blue lighten-1 waves-effect waves-light">Editor</a>
             </div>
         </div>
     </div>

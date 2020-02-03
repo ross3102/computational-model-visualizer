@@ -21,5 +21,6 @@ switch ($action) {
         break;
     case "show_form":
         $question_id = filter_input(INPUT_GET, "question_id");
+        $question = get_question_by_id($question_id);
         include 'view.php';
 }

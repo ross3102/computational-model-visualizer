@@ -14,7 +14,12 @@ switch ($action) {
     case "join_room":
         $room_code = filter_input(INPUT_POST, "room_code");
         join_room($user_id, hexdec($room_code));
-        include "waiting.php";
+        header("Location: ./index.php");
+        break;
+    case "join_room_again":
+        $room_code = filter_input(INPUT_GET, "room_code");
+        $question1 = get_questions_by_room_code($room_code)[0];
+        header("Location: ../load_machine/index.php?question_id=".$question1["question_id"]);
         break;
     case "create_room":
         $name = filter_input(INPUT_POST, "room_name");
@@ -36,5 +41,6 @@ switch ($action) {
         break;
     case "list_rooms":
         $rooms = get_rooms($user_id);
+        $joined_rooms = get_joined_rooms($user_id);
         include "./view.php";
 }

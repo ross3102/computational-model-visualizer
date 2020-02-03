@@ -2,3 +2,8 @@
     margin: 5vh auto;
     height: 90vh;
 }
+
+#main-box>.row>.s9 {
+    height: 100%;
+    overflow: scroll;
+}
