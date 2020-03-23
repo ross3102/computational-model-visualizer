@@ -6,6 +6,11 @@ $head = "<style>
     width: 90% !important;
 }
 
+textarea {
+    height: 50vh;
+    overflow-y: scroll;
+}
+
 </style>";
 
 generateHeader($head); ?>
@@ -15,6 +20,9 @@ generateHeader($head); ?>
 <div class="row" style="height: 100%;">
     <div class="col s9" id="canvas-container" style="height: 100%;">
         <canvas id="canvas" height="500" width="600" style="border: 1px solid black"></canvas>
+        <div class="center-align">
+            <a onclick="convertToText()" class="btn btn-large waves-effect waves-light blue lighten-1">Finish</a>
+        </div>
     </div>
     <div class="col s3">
         <form class="row" action="." method="post">
@@ -25,7 +33,7 @@ generateHeader($head); ?>
                 <label for="start-state">Start State</label>
             </div>
             <div class="input-field col s12">
-                <textarea class="materialize-textarea" name="transitions" id="transitions"></textarea>
+                <textarea style="height: 100px; max-height: 100px; overflow-y: scroll" class="materialize-textarea" name="transitions" id="transitions"></textarea>
                 <label for="transitions">Transitions</label>
             </div>
             <div class="input-field col s12">
@@ -104,7 +112,7 @@ generateHeader($head); ?>
 
     function resizeCanvas() {
         canvas.width  = $("#canvas-container").width();
-        canvas.height = $("#canvas-container").height() - $("h4").height() - 2;
+        canvas.height = $("#canvas-container").height() - $("h4").height() - $(".btn-large").height() - 10;
     }
 
     function drawCircle(state) {
@@ -142,7 +150,7 @@ generateHeader($head); ?>
         ctx.stroke();
 
         ctx.save();
-        ctx.translate((x1+x2)/2, (y1+y2)/2);
+        ctx.translate((x1+x2)/2+(x2>x1?-10:10), (y1+y2)/2+(y2>y1?10:0));
         ctx.rotate(Math.atan((y2-y1)/(x2-x1)));
         ctx.textAlign = "center";
         ctx.fillText(text, 0, 0);
@@ -181,6 +189,28 @@ generateHeader($head); ?>
     function draw() {
         resizeCanvas();
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        drawCircle(new State(0.1, 0.1, ""));
+
+        ctx.font = "12px Arial";
+        ctx.fillStyle = "black";
+        ctx.textAlign = "center";
+        ctx.fillText("New", bx(0.1), by(0.1)-3);
+        ctx.fillText("State", bx(0.1), by(0.1)+9);
+
+        ctx.beginPath();
+        ctx.rect(bx(0.025), by(0.25), bx(0.15), by(0.7));
+        if (dragging && 0.025 < sx(mouseX) && sx(mouseX) < 0.175 && 0.25 < sy(mouseY) && sy(mouseY) < 0.95)
+            ctx.fillStyle = "pink";
+        else
+            ctx.fillStyle = "red";
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.font = "18px Arial";
+        ctx.fillStyle = "black";
+        ctx.textAlign = "center";
+        ctx.fillText("Trash", bx(0.1), by(0.6));
 
         if (dragging) {
             drawCircle(dragging);
@@ -239,15 +269,28 @@ generateHeader($head); ?>
                 }
             }
         }
-        dragging = new State(mouseX, mouseY, "");
+        if (inCircle(mouseX, mouseY, bx(0.1), by(0.1), bx(radius)))
+            dragging = new State(mouseX, mouseY, "");
     });
 
     canvas.addEventListener("mouseup", function (evt) {
-        while (dragging.name == "") {
-            dragging.name = prompt("Enter state name");
+        if (0.025 < sx(mouseX) && sx(mouseX) < 0.175 && 0.25 < sy(mouseY) && sy(mouseY) < 0.95) {
+            states.forEach(function(state) {
+                for (t=0; t<state.transitions.length; t++)
+                    if (state.transitions[t].end.name === dragging.name)
+                        state.transitions.splice(t, 1);
+            });
+            if (dragging.name == start)
+                start = null;
+            if (end.includes(dragging.name))
+                end.splice(end.indexOf(dragging.name),1)
+        } else {
+            while (dragging.name == "") {
+                dragging.name = prompt("Enter state name");
+            }
+            if (dragging.name != null)
+                states.push(dragging);
         }
-        if (dragging.name != null)
-            states.push(dragging);
         dragging = false;
     });
 
@@ -328,5 +371,23 @@ generateHeader($head); ?>
             }
             transitioning = false;
         }
-    })
+    });
+
+    function convertToText() {
+        $("#start-state").val(start);
+        let transitionString = "";
+        let endString = "";
+        states.forEach(function(state) {
+            state.transitions.forEach(function(tr) {
+                transitionString += state.name + " " + tr.read + " " + tr.write + " " + tr.direction + " " + tr.end.name + "\n";
+            });
+        });
+
+        end.forEach(function(endName) {
+            endString += endName + " ";
+        });
+        $("#transitions").val(transitionString);
+        $("#end-state").val(endString);
+        M.updateTextFields();
+    }
 </script>
