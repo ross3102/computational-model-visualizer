@@ -32,6 +32,14 @@ switch ($action) {
         }
         header("Location: ./index.php?action=show_users&room_id=" . $room_id);
         break;
+    case "add_case":
+        $question_id = filter_input(INPUT_POST, "question_id");
+        $room_id = filter_input(INPUT_POST, "room_id");
+        $test_case = filter_input(INPUT_POST, "test_case");
+        $fail = filter_input(INPUT_POST, "fail");
+        add_test_cases($question_id, $test_case, $fail);
+        header("Location: ./index.php?room_id=" . $room_id);
+        break;
 
     case "add_question":
         $room_id = filter_input(INPUT_POST, "room_id");

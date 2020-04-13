@@ -5,7 +5,6 @@ function get_machines() {
 
     try {
         $query = "SELECT * FROM machine";
-
         $statement = $db->prepare($query);
         $statement->execute();
         $result = $statement->fetchAll();
@@ -33,7 +32,40 @@ function add_question ($id, $question){
     }
 
 }
-
+function add_test_cases($question_id, $test_case, $fail){
+    global $db;
+    try{
+        $query = "INSERT INTO test_case (question_id, fail, input)
+                VALUES (:question_id, :fail, :input)";
+        $statement = $db->prepare($query);
+        $statement->bindValue(":question_id", $question_id);
+        $statement->bindValue(":fail", $fail);
+        $statement->bindValue(":input", $test_case);
+        $statement->execute();
+        $statement->closeCursor();
+    }
+    catch (PDOException $e){
+        echo $e;
+        exit();
+    }
+}
+function get_test_cases($question_id){
+    global $db;
+    try{
+        $query = "SELECT * FROM test_case
+      WHERE question_id = :question_id";
+        $statement = $db->prepare($query);
+        $statement->bindValue(":question_id", $question_id);
+        $statement->execute();
+        $result = $statement->fetch();
+        $statement->closeCursor();
+        return $result;
+    }
+    catch (PDOException $e){
+        echo $e;
+        exit();
+    }
+}
 function delete_question($question_id){
     global $db;
     try{
