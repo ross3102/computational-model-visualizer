@@ -143,6 +143,24 @@ function get_user_by_id($user_id) {
     }
 }
 
+function get_user_by_token($token) {
+    global $db;
+
+    try {
+        $query = "SELECT * FROM user WHERE user_token = :user_token limit 1";
+
+        $statement = $db->prepare($query);
+        $statement->bindValue(":user_token", $token);
+        $statement->execute();
+        $result = $statement->fetch();
+        $statement->closeCursor();
+        return $result;
+    } catch (PDOException $e) {
+        echo $e;
+        exit();
+    }
+}
+
 function create_room($user_id, $name, $desc) {
     global $db;
 
@@ -367,6 +385,25 @@ function close_room($room_id) {
         $statement->execute();
         $statement->closeCursor();
     } catch(PDOException $e) {
+        echo $e;
+        exit();
+    }
+}
+function create_user($token, $first_name, $last_name, $email) {
+    global $db;
+
+    try {
+        $query = "insert into user (user_token, first_name, last_name, email)
+                  values (:token, :first_name, :last_name, :email)";
+
+        $statement = $db->prepare($query);
+        $statement->bindValue(":token", $token);
+        $statement->bindValue(":first_name", $first_name);
+        $statement->bindValue(":last_name", $last_name);
+        $statement->bindValue(":email", $email);
+        $statement->execute();
+        $statement->closeCursor();
+    } catch (PDOException $e) {
         echo $e;
         exit();
     }

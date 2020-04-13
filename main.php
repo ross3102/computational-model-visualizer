@@ -5,11 +5,13 @@ require_once dirname(__FILE__). "/vendor/autoload.php";
 
 require_once dirname(__FILE__) . "/model/machine_db.php";
 
-$user_id = 21;
-$user = get_user_by_id($user_id);
+$current_user = "";
 
+if(isset($_COOKIE["session"])){
+    $current_user = get_user_by_token($_COOKIE["session"]);
+}
 function generateHeader($head="") {
-    global $web_root, $user;
+    global $web_root, $current_user;
 
     echo "
     <!DOCTYPE html>
@@ -29,7 +31,7 @@ function generateHeader($head="") {
             <div class='nav-wrapper' style='padding: 0 30px;'>
                 <a href='/" . $web_root . "' class='brand-logo'>CMV</a>
                 <ul id='nav-mobile' class='right hide-on-med-and-down'>
-                    <li><a href='#'>Hello, " . $user["username"] . "</a></li>
+                    <li><a href='#'>Hello, " . $current_user["first_name"] . "</a></li>
                 </ul>
             </div>
             </nav>
