@@ -442,7 +442,7 @@ function create_user($token, $first_name, $last_name, $email) {
     global $db;
 
     try {
-        if (get_user_by_email($email) != null) {
+        if (!isset(get_user_by_email($email)["email"])) {
             $query = "insert into user (user_token, first_name, last_name, email)
                       values (:token, :first_name, :last_name, :email)";
         }
