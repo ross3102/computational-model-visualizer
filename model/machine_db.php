@@ -442,7 +442,8 @@ function create_user($token, $first_name, $last_name, $email) {
     global $db;
 
     try {
-        if (!isset(get_user_by_email($email)["email"])) {
+        $e = get_user_by_email($email);
+        if (!isset($e["email"])) {
             $query = "insert into user (user_token, first_name, last_name, email)
                       values (:token, :first_name, :last_name, :email)";
         }
@@ -451,9 +452,11 @@ function create_user($token, $first_name, $last_name, $email) {
         }
 
         $statement = $db->prepare($query);
+        if(!isset($e["email"])) {
+            $statement->bindValue(":first_name", $first_name);
+            $statement->bindValue(":last_name", $last_name);
+        }
         $statement->bindValue(":token", $token);
-        $statement->bindValue(":first_name", $first_name);
-        $statement->bindValue(":last_name", $last_name);
         $statement->bindValue(":email", $email);
         $statement->execute();
         $statement->closeCursor();
