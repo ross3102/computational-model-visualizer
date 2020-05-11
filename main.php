@@ -5,7 +5,7 @@ require_once dirname(__FILE__). "/vendor/autoload.php";
 
 require_once dirname(__FILE__) . "/model/machine_db.php";
 
-$current_user = "";
+$current_user = array();
 
 if(isset($_COOKIE["session"])){
     $current_user = get_user_by_token($_COOKIE["session"]);
@@ -31,7 +31,7 @@ function generateHeader($head="") {
             <div class='nav-wrapper' style='padding: 0 30px;'>
                 <a href='/" . $web_root . "' class='brand-logo'>CMV</a>
                 <ul id='nav-mobile' class='right hide-on-med-and-down'>
-                    <li><a href='#'>Hello, " . $current_user["first_name"] . "</a></li>
+                    <li><a href='#'>" . ((count($current_user) == 0) ? '': 'Hello, ' . $current_user['first_name']) . "</a></li>
                 </ul>
             </div>
             </nav>
