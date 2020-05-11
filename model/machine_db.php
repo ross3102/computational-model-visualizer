@@ -425,7 +425,7 @@ function get_user_by_email($email) {
     global $db;
 
     try {
-        $query = "SELECT * FROM user WHERE email = :email";
+        $query = "SELECT * FROM user WHERE email = :email LIMIT 1";
 
         $statement = $db->prepare($query);
         $statement->bindValue(":email", $email);
