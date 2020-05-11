@@ -5,13 +5,21 @@ require_once dirname(__FILE__). "/vendor/autoload.php";
 
 require_once dirname(__FILE__) . "/model/machine_db.php";
 
-$current_user = array();
+$current_user = "";
 
 if(isset($_COOKIE["session"])){
     $current_user = get_user_by_token($_COOKIE["session"]);
 }
 function generateHeader($head="") {
     global $web_root, $current_user;
+
+    if(isset($current_user["first_name"])){
+        $user_greeting = "<li><a href='#'>Hello, " . $current_user["first_name"] . "</a></li>
+                        <li><a href='../index.php?action=signout'>Sign Out</a></li>";
+    }
+    else {
+        $user_greeting = "";
+    }
 
     echo "
     <!DOCTYPE html>
@@ -31,7 +39,7 @@ function generateHeader($head="") {
             <div class='nav-wrapper' style='padding: 0 30px;'>
                 <a href='/" . $web_root . "' class='brand-logo'>CMV</a>
                 <ul id='nav-mobile' class='right hide-on-med-and-down'>
-                    <li><a href='#'>" . ((count($current_user) == 0) ? '': 'Hello, ' . $current_user['first_name']) . "</a></li>
+                    " . $user_greeting . "
                 </ul>
             </div>
             </nav>
@@ -57,4 +65,15 @@ function generateFooter($scripts="") {
         </body>
     </html>
     ";
+}
+
+function verify_logged() {
+    global $current_user;
+
+    if (isset($current_user["first_name"])) {
+        return true;
+    }
+    else {
+        header("Location: ../index.php");
+    }
 }

@@ -421,12 +421,34 @@ function close_room($room_id) {
         exit();
     }
 }
+function get_user_by_email($email) {
+    global $db;
+
+    try {
+        $query = "SELECT * FROM user WHERE email = :email";
+
+        $statement = $db->prepare($query);
+        $statement->bindValue(":email", $email);
+        $statement->execute();
+        $result = $statement->fetch();
+        $statement->closeCursor();
+        return $result;
+    } catch (PDOException $e) {
+        echo $e;
+        exit();
+    }
+}
 function create_user($token, $first_name, $last_name, $email) {
     global $db;
 
     try {
-        $query = "insert into user (user_token, first_name, last_name, email)
-                  values (:token, :first_name, :last_name, :email)";
+        if (get_user_by_email($email) != null) {
+            $query = "insert into user (user_token, first_name, last_name, email)
+                      values (:token, :first_name, :last_name, :email)";
+        }
+        else {
+            $query = "update user set user_token = :token where email = :email";
+        }
 
         $statement = $db->prepare($query);
         $statement->bindValue(":token", $token);
