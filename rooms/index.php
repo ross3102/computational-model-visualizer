@@ -3,6 +3,8 @@
 require_once "../main.php";
 require_once "../model/machine_db.php";
 
+verify_logged_in();
+
 $action = filter_input(INPUT_GET, "action");
 if (!isset($action)) {
     $action = filter_input(INPUT_POST, "action");

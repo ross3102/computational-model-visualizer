@@ -3,6 +3,8 @@
 require_once "../main.php";
 require_once "../model/machine_db.php";
 
+verify_logged_in();
+
 const FSM = 1,
     PDA = 2,
     TM = 3;
