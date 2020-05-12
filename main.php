@@ -67,7 +67,7 @@ function generateFooter($scripts="") {
     ";
 }
 
-function verify_logged() {
+function verify_logged_in() {
     global $current_user;
 
     if (isset($current_user["first_name"])) {
