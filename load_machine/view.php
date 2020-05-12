@@ -32,9 +32,6 @@ generateHeader($head); ?>
         </div>
     </div>
 
-
-
-
 <?php generateFooter(); ?>
 
 
@@ -678,7 +675,7 @@ generateHeader($head); ?>
 
     function run() {
         reset();
-        nextStep(true);
+        return nextStep(true);
     }
 
     function submitMachine() {
