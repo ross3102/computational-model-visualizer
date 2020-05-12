@@ -15,14 +15,31 @@ function get_machines() {
         exit();
     }
 }
-function add_question ($id, $question){
+
+function get_all_machine_types() {
+    global $db;
+
+    try {
+        $query = "SELECT * FROM machine_type";
+        $statement = $db->prepare($query);
+        $statement->execute();
+        $result = $statement->fetchAll();
+        $statement->closeCursor();
+        return $result;
+    } catch (PDOException $e) {
+        echo $e;
+        exit();
+    }
+}
+function add_question ($id, $question, $machine_type){
     global $db;
     try {
-        $query = "INSERT INTO question (room_id, text)
-              VALUES(:id, :question)";
+        $query = "INSERT INTO question (room_id, text, machine_type)
+              VALUES(:id, :question, :machine_type)";
         $statement = $db->prepare($query);
         $statement->bindValue(":id", $id);
         $statement->bindValue(":question", $question);
+        $statement->bindValue(":machine_type", $machine_type);
         $statement->execute();
         $statement->closeCursor();
     }
@@ -32,15 +49,15 @@ function add_question ($id, $question){
     }
 
 }
-function add_test_cases($question_id, $test_case, $fail){
+function add_test_cases($question_id, $test_input, $pass){
     global $db;
     try{
-        $query = "INSERT INTO test_case (question_id, fail, input)
-                VALUES (:question_id, :fail, :input)";
+        $query = "INSERT INTO test_case (question_id, pass, input)
+                VALUES (:question_id, :pass, :input)";
         $statement = $db->prepare($query);
         $statement->bindValue(":question_id", $question_id);
-        $statement->bindValue(":fail", $fail);
-        $statement->bindValue(":input", $test_case);
+        $statement->bindValue(":pass", $pass);
+        $statement->bindValue(":input", $test_input);
         $statement->execute();
         $statement->closeCursor();
     }
@@ -57,7 +74,7 @@ function get_test_cases($question_id){
         $statement = $db->prepare($query);
         $statement->bindValue(":question_id", $question_id);
         $statement->execute();
-        $result = $statement->fetch();
+        $result = $statement->fetchAll();
         $statement->closeCursor();
         return $result;
     }

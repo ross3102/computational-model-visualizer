@@ -8,7 +8,7 @@ generateHeader(""); ?>
             <h5 style="font-weight:200; text-decoration: underline;">Joined Users</h5>
             <ul class="collection">
                 <?php foreach ($user_list as $member) { ?>
-                    <li class="collection-item"><?php echo $member["username"] ?></li>
+                    <li class="collection-item"><?php echo $member["last_name"] . ", " . $member["first_name"] ?></li>
                 <?php } ?>
             </ul>
             <div class="center-align">
