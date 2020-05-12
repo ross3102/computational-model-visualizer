@@ -31,28 +31,12 @@ generateHeader($head); ?>
             <a onclick="nextStep()" class="btn btn-large waves-effect waves-light blue lighten-1">Step</a>
         </div>
     </div>
-<!--    <div class="col s3">-->
-<!--        <form class="row" action="." method="post">-->
-<!--            <input type="hidden" name="action" value="create_turing">-->
-<!--            <input type="hidden" name="question_id" value="--><?php //echo $question_id ?><!--">-->
-<!--            <div class="input-field col s12">-->
-<!--                <input type="text" name="start_state" id="start-state">-->
-<!--                <label for="start-state">Start State</label>-->
-<!--            </div>-->
-<!--            <div class="input-field col s12">-->
-<!--                <textarea style="height: 100px; max-height: 100px; overflow-y: scroll" class="materialize-textarea" name="transitions" id="transitions"></textarea>-->
-<!--                <label for="transitions">Transitions</label>-->
-<!--            </div>-->
-<!--            <div class="input-field col s12">-->
-<!--                <input type="text" name="end_state" id="end-state">-->
-<!--                <label for="end-state">End States</label>-->
-<!--            </div>-->
-<!--            <div class="center-align">-->
-<!--                <button onclick="submitMachine()" class="btn btn-large waves-effect waves-light blue">Create</button>-->
-<!--            </div>-->
-<!--        </form>-->
-<!--    </div>-->
-<!--</div>-->
+
+<div class="center-align">
+    <a onclick="submitMachine()" style="margin-bottom:3%" class="btn btn-large waves-effect waves-light blue lighten-1">Submit</a>
+</div>
+
+
 
 <?php generateFooter(); ?>
 
@@ -684,9 +668,9 @@ generateHeader($head); ?>
             }
         }
         if (end.includes(curstate))
-            alert("Match");
+            return true;
         else
-            alert("No match");
+            return false;
     }
 
     function reset() {
@@ -698,5 +682,24 @@ generateHeader($head); ?>
     function run() {
         reset();
         nextStep(true);
+    }
+
+    function submitMachine() {
+        let correct = 0;
+        let total = 0;
+
+        if(confirm("Are you sure you want to submit?")) {
+            <?php foreach(get_test_cases($question_id) as $case) { ?>
+                tape.load('<?php echo $case["input"]?>');
+                reset();
+                if(run()) {
+                    correct += 1;
+                }
+                total += 1;
+            <?php } ?>
+
+            alert("You got " + correct + " correct out of " + total + ".");
+            save();
+        }
     }
 </script>
