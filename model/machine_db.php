@@ -278,7 +278,7 @@ function get_users_by_room($room_id) {
     global $db;
 
     try {
-        $query = "select username from user, room_user_xref
+        $query = "select first_name, last_name from user, room_user_xref
               where room_id = :room_id
               and user.user_id = room_user_xref.user_id";
 

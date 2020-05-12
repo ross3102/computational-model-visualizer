@@ -4,6 +4,7 @@ $head = "<style>
 
 #main-box {
     width: 90% !important;
+    padding: 20px;
 }
 
 textarea {
@@ -17,35 +18,41 @@ generateHeader($head); ?>
 
 <h4 style="margin: 2px"><?php echo $question["text"] ?></h4>
 
-<div class="row" style="height: 100%;">
-    <div class="col s9" id="canvas-container" style="height: 100%;">
+<!--<div class="row" style="height: 100%;">-->
+    <div id="tape-container" style="height: 15%;">
+        <canvas id="tape"></canvas>
+    </div>
+    <div id="canvas-container" style="height: 85%;">
         <canvas id="canvas" height="500" width="600" style="border: 1px solid black"></canvas>
         <div class="center-align">
-            <a onclick="convertToText()" class="btn btn-large waves-effect waves-light blue lighten-1">Finish</a>
+            <a onclick="save()" class="btn btn-large waves-effect waves-light blue lighten-1">Save</a>
+            <a onclick="load()" class="btn btn-large waves-effect waves-light blue lighten-1">Load Input</a>
+            <a onclick="run()" id="run-button" class="btn btn-large waves-effect waves-light blue lighten-1">Run</a>
+            <a onclick="nextStep()" class="btn btn-large waves-effect waves-light blue lighten-1">Step</a>
         </div>
     </div>
-    <div class="col s3">
-        <form class="row" action="." method="post">
-            <input type="hidden" name="action" value="create_turing">
-            <input type="hidden" name="question_id" value="<?php echo $question_id ?>">
-            <div class="input-field col s12">
-                <input type="text" name="start_state" id="start-state">
-                <label for="start-state">Start State</label>
-            </div>
-            <div class="input-field col s12">
-                <textarea style="height: 100px; max-height: 100px; overflow-y: scroll" class="materialize-textarea" name="transitions" id="transitions"></textarea>
-                <label for="transitions">Transitions</label>
-            </div>
-            <div class="input-field col s12">
-                <input type="text" name="end_state" id="end-state">
-                <label for="end-state">End State</label>
-            </div>
-            <div class="center-align">
-                <button class="btn btn-large waves-effect waves-light blue" type="submit">Create</button>
-            </div>
-        </form>
-    </div>
-</div>
+<!--    <div class="col s3">-->
+<!--        <form class="row" action="." method="post">-->
+<!--            <input type="hidden" name="action" value="create_turing">-->
+<!--            <input type="hidden" name="question_id" value="--><?php //echo $question_id ?><!--">-->
+<!--            <div class="input-field col s12">-->
+<!--                <input type="text" name="start_state" id="start-state">-->
+<!--                <label for="start-state">Start State</label>-->
+<!--            </div>-->
+<!--            <div class="input-field col s12">-->
+<!--                <textarea style="height: 100px; max-height: 100px; overflow-y: scroll" class="materialize-textarea" name="transitions" id="transitions"></textarea>-->
+<!--                <label for="transitions">Transitions</label>-->
+<!--            </div>-->
+<!--            <div class="input-field col s12">-->
+<!--                <input type="text" name="end_state" id="end-state">-->
+<!--                <label for="end-state">End States</label>-->
+<!--            </div>-->
+<!--            <div class="center-align">-->
+<!--                <button onclick="submitMachine()" class="btn btn-large waves-effect waves-light blue">Create</button>-->
+<!--            </div>-->
+<!--        </form>-->
+<!--    </div>-->
+<!--</div>-->
 
 <?php generateFooter(); ?>
 
@@ -62,21 +69,111 @@ generateHeader($head); ?>
 
     class Transition {
         read = "";
+        readStack = "";
         write = "";
-        direction = 1;
+        direction = "";
         end = null;
-        constructor(end, read="", write="", direction=1) {
+        constructor(end, read="", readStack = "", write="", direction=">") {
             this.end = end;
             this.read = read;
+            this.readStack = readStack;
             this.write = write;
             this.direction = direction;
         }
     }
 
-    let radius = .04;
+    class Tape {
+        left = "";
+        right = "";
+        constructor() {
+            this.left = "";
+            this.right = "";
+        }
+
+        load(input) {
+            this.left = "";
+            this.right = input;
+        }
+
+        popright() {
+            if (this.right.length == 0)
+                return " ";
+            let c = this.right.charAt(0);
+            this.right = this.right.slice(1);
+            return c;
+        }
+
+        popleft() {
+            if (this.left.length == 0)
+                return " ";
+            let c = this.left.charAt(0);
+            this.left = this.left.slice(1);
+            return c;
+        }
+
+        read() {
+            if (this.right.length == 0)
+                return " ";
+            return this.right.charAt(0);
+        }
+
+        write(c) {
+            if (this.right.length == 0)
+                this.right = c;
+            else {
+                this.popright();
+                this.right = c + this.right;
+            }
+        }
+    }
+
+    class PDAStack {
+        stack = "";
+        constructor() {
+            this.stack = "";
+        }
+
+        clear() {
+            this.stack = "";
+        }
+
+        peek(c) {
+            if (c == "") return true;
+            if (this.stack.length == 0)
+                return false;
+            return this.stack.charAt(0) == c;
+        }
+
+        pop(c) {
+            if (c == "") return true;
+            if (this.stack.length == 0)
+                return false;
+            let r = this.stack.charAt(0);
+            if (c != r) return false;
+            this.stack = this.stack.slice(1);
+            return true;
+        }
+
+        push(c) {
+            if (this.stack.length == 0)
+                this.stack = c;
+            else {
+                this.stack = c + this.stack;
+            }
+        }
+    }
+
+
+    let tape = new Tape();
+    let pdaStack = new PDAStack();
+
+    let radius = .035;
 
     let canvas = document.getElementById("canvas");
     let ctx = canvas.getContext("2d");
+
+    let tapecanvas = document.getElementById("tape");
+    let tapectx = tapecanvas.getContext("2d");
 
     let mouseX = 0,
         mouseY = 0,
@@ -88,6 +185,10 @@ generateHeader($head); ?>
     let states = [];
     let start = null;
     let end = [];
+
+    let offset = 0;
+    let input = "";
+    let curstate = "";
 
     function bx(x) {
         return x*canvas.width;
@@ -111,20 +212,29 @@ generateHeader($head); ?>
     }
 
     function resizeCanvas() {
+        tapecanvas.width = $("#canvas-container").width();
+        tapecanvas.height = $("#tape-container").height();
         canvas.width  = $("#canvas-container").width();
         canvas.height = $("#canvas-container").height() - $("h4").height() - $(".btn-large").height() - 10;
     }
 
     function drawCircle(state) {
         ctx.strokeStyle = 'rgb(0, 0, 0)';
-        if (state.name === start) {
-            ctx.strokeStyle = 'rgb(0, 255, 0)';
-        }
+
+        if (state.name == curstate && curstate != "")
+            ctx.strokeStyle = 'rgb(0, 0, 255)';
+
         ctx.beginPath();
         let scaledX = bx(state.x),
             scaledY = by(state.y);
         ctx.ellipse(scaledX, scaledY, bx(radius), bx(radius), 0, 0, 2*Math.PI);
         ctx.stroke();
+
+        if (state.name === start) {
+            ctx.beginPath();
+            drawArrow(scaledX-bx(radius)-bx(0.05),scaledY,scaledX-bx(radius),scaledY);
+            ctx.stroke();
+        }
 
         if (end.includes(state.name)) {
             ctx.beginPath();
@@ -144,14 +254,14 @@ generateHeader($head); ?>
         x2 = bx(x2);
         y2 = by(y2);
         ctx.strokeStyle = 'rgb(0, 0, 0)';
-
         ctx.beginPath();
+
         drawArrow(x1, y1, x2, y2);
         ctx.stroke();
 
         ctx.save();
-        ctx.translate((x1+x2)/2+(x2>x1?-10:10), (y1+y2)/2+(y2>y1?10:0));
-        ctx.rotate(Math.atan((y2-y1)/(x2-x1)));
+        ctx.translate((x1 + x2) / 2 + (x2 > x1 ? -10 : 10), (y1 + y2) / 2 + (y2 > y1 ? 10 : 0));
+        ctx.rotate(Math.atan((y2 - y1) / (x2 - x1)));
         ctx.textAlign = "center";
         ctx.fillText(text, 0, 0);
         ctx.restore();
@@ -176,31 +286,52 @@ generateHeader($head); ?>
         y2 = by(y2);
         b = bx(b);
 
-        let d = dist(x1, y1, x2, y2);
+        if (x1 == x2 && y1 == y2) {
+            ctx.beginPath();
+            ctx.arc(x1,y1-b,b,Math.PI/6,5*Math.PI/6,true);
+            var headlen = 10;
+            var angle = 2*Math.PI/3;
+            var tox = x1 + b*Math.cos(Math.PI/6),
+                toy = y1 - b*Math.sin(Math.PI/6);
+            ctx.moveTo(tox, toy);
+            ctx.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
+            ctx.moveTo(tox, toy);
+            ctx.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
+            ctx.stroke();
 
-        let nx1 = sx(x1+(x2-x1)*b/d),
-            ny1 = sy(y1+(y2-y1)*b/d),
-            nx2 = sx(x1+(x2-x1)*(1-b/d)),
-            ny2 = sy(y1+(y2-y1)*(1-b/d));
+            ctx.font = "12px Arial";
+            ctx.fillStyle = "black";
+            ctx.textAlign = "center";
+            ctx.fillText(text, x1, y1 - 2*b-2);
+        } else {
+            let d = dist(x1, y1, x2, y2);
 
-        drawLine(nx1, ny1, nx2, ny2, text);
+            let nx1 = sx(x1 + (x2 - x1) * b / d),
+                ny1 = sy(y1 + (y2 - y1) * b / d),
+                nx2 = sx(x1 + (x2 - x1) * (1 - b / d)),
+                ny2 = sy(y1 + (y2 - y1) * (1 - b / d));
+
+            drawLine(nx1, ny1, nx2, ny2, text);
+        }
     }
 
     function draw() {
         resizeCanvas();
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        drawCircle(new State(0.1, 0.1, ""));
+        updateTape();
+
+        drawCircle(new State(0.085, 0.125, ""));
 
         ctx.font = "12px Arial";
         ctx.fillStyle = "black";
         ctx.textAlign = "center";
-        ctx.fillText("New", bx(0.1), by(0.1)-3);
-        ctx.fillText("State", bx(0.1), by(0.1)+9);
+        ctx.fillText("New", bx(0.085), by(0.125)-3);
+        ctx.fillText("State", bx(0.085), by(0.125)+9);
 
         ctx.beginPath();
-        ctx.rect(bx(0.025), by(0.25), bx(0.15), by(0.7));
-        if (dragging && 0.025 < sx(mouseX) && sx(mouseX) < 0.175 && 0.25 < sy(mouseY) && sy(mouseY) < 0.95)
+        ctx.rect(bx(0.025), by(0.25), bx(0.12), by(0.7));
+        if (dragging && 0.025 < sx(mouseX) && sx(mouseX) < 0.145 && 0.25 < sy(mouseY) && sy(mouseY) < 0.95)
             ctx.fillStyle = "pink";
         else
             ctx.fillStyle = "red";
@@ -210,19 +341,35 @@ generateHeader($head); ?>
         ctx.font = "18px Arial";
         ctx.fillStyle = "black";
         ctx.textAlign = "center";
-        ctx.fillText("Trash", bx(0.1), by(0.6));
+        ctx.fillText("Trash", bx(0.085), by(0.6));
 
         if (dragging) {
             drawCircle(dragging);
             dragging.transitions.forEach(function (tr) {
-                drawLineBuffer(dragging.x, dragging.y, tr.end.x, tr.end.y, radius, tr.read + ", " + tr.write + ", " + (tr.direction ? ">" : "<"));
+                let transText = "";
+                <?php if ($machine_type == FSM) { ?>
+                    transText = tr.read;
+                <?php } else if ($machine_type == PDA) { ?>
+                    transText = tr.read + ", " + tr.readStack + " -> " + tr.write;
+                <?php } else { ?>
+                    transText = tr.read + ", " + tr.write + ", " + tr.direction;
+                <?php } ?>
+                drawLineBuffer(dragging.x, dragging.y, tr.end.x, tr.end.y, radius, transText);
             });
         }
 
         states.forEach(function (state) {
             drawCircle(state);
             state.transitions.forEach(function (tr) {
-                drawLineBuffer(state.x, state.y, tr.end.x, tr.end.y, radius, tr.read + ", " + tr.write + ", " + (tr.direction ? ">" : "<"))
+                let transText = "";
+                <?php if ($machine_type == FSM) { ?>
+                transText = tr.read;
+                <?php } else if ($machine_type == PDA) { ?>
+                transText = tr.read + ", " + tr.readStack + " -> " + tr.write;
+                <?php } else { ?>
+                transText = tr.read + ", " + tr.write + ", " + tr.direction;
+                <?php } ?>
+                drawLineBuffer(state.x, state.y, tr.end.x, tr.end.y, radius, transText)
             });
         });
 
@@ -235,6 +382,7 @@ generateHeader($head); ?>
         resizeCanvas();
         mouseX = bx(1.0/2);
         mouseY = by(1.0/2);
+        updateTape();
         draw();
         setInterval(draw, 1);
     });
@@ -269,7 +417,7 @@ generateHeader($head); ?>
                 }
             }
         }
-        if (inCircle(mouseX, mouseY, bx(0.1), by(0.1), bx(radius)))
+        if (inCircle(mouseX, mouseY, bx(0.085), by(0.125), bx(radius)))
             dragging = new State(mouseX, mouseY, "");
     });
 
@@ -343,51 +491,212 @@ generateHeader($head); ?>
                 if (inCircle(mouseX, mouseY, bx(state.x), by(state.y), bx(radius))) {
                     let end = state,
                         read = "",
+                        readStack = "",
                         write = "",
-                        direction = "";
+                        direction = ">";
                     while (read.length < 1) {
-                        read = prompt("Character to read");
+                        read = prompt("Character to read from input");
                         if (read == null) {
                             transitioning = false;
                             return;
                         }
                     }
-                    while (write.length < 1) {
-                        write = prompt("Character to write");
+                    <?php
+                    if ($machine_type == PDA) { ?>
+                        readStack = prompt("Character to read from stack");
+                        if (readStack == null) {
+                            transitioning = false;
+                            return;
+                        }
+                        write = prompt("Character to write to tape/stack");
                         if (write == null) {
                             transitioning = false;
                             return;
                         }
-                    }
-                    while (direction !== ">" && direction !== "<") {
-                        direction = prompt("Direction to move");
-                        if (direction == null) {
-                            transitioning = false;
-                            return;
+                    <?php } else if ($machine_type == FSM) { ?>
+                        write = read;
+                    <?php } else if ($machine_type == TM) { ?>
+                        while (write.length < 1) {
+                            write = prompt("Character to write to tape/stack");
+                            if (write == null) {
+                                transitioning = false;
+                                return;
+                            }
                         }
-                    }
-                    transitioning.transitions.push(new Transition(end, read, write, direction))
+                        do {
+                            direction = prompt("Direction to move");
+                            if (direction == null) {
+                                transitioning = false;
+                                return;
+                            }
+                        } while (direction !== ">" && direction !== "<");
+                    <?php } ?>
+                    transitioning.transitions.push(new Transition(end, read, readStack, write, direction))
                 }
             }
             transitioning = false;
         }
     });
 
-    function convertToText() {
-        $("#start-state").val(start);
+    // function convertToText() {
+    //     $("#start-state").val(start);
+    //     let transitionString = "";
+    //     let endString = "";
+    //     states.forEach(function(state) {
+    //         state.transitions.forEach(function(tr) {
+    //             transitionString += state.name + " " + tr.read + " " + tr.write + " " + tr.direction + " " + tr.end.name + "\n";
+    //         });
+    //     });
+    //
+    //     end.forEach(function(endName) {
+    //         endString += endName + " ";
+    //     });
+    //     $("#transitions").val(transitionString);
+    //     $("#end-state").val(endString);
+    //     M.updateTextFields();
+    // }
+
+    function save() {
         let transitionString = "";
         let endString = "";
         states.forEach(function(state) {
             state.transitions.forEach(function(tr) {
-                transitionString += state.name + " " + tr.read + " " + tr.write + " " + tr.direction + " " + tr.end.name + "\n";
+                transitionString += state.name + " " + tr.read + " ";
+                <?php if ($machine_type == PDA) { ?>
+                    transitionString += tr.readStack + " " + tr.write + " ";
+                <?php } else if ($machine_type == TM) { ?>
+                    transitionString += tr.write + " " + tr.direction + " ";
+                <?php } ?>
+                transitionString += tr.end.name + "\n";
             });
         });
 
         end.forEach(function(endName) {
             endString += endName + " ";
         });
-        $("#transitions").val(transitionString);
-        $("#end-state").val(endString);
-        M.updateTextFields();
+        $.ajax({
+            url: "./index.php",
+            method: "POST",
+            data: {
+                action: "save_machine",
+                question_id: <?php echo $question_id ?>,
+                machine_type: <?php echo $machine_type ?>,
+                start_state: start,
+                transitions: transitionString,
+                end_state: endString
+            },
+            success: function () {
+                M.toast({html: "Saved"})
+            }
+        });
+    }
+
+    function updateTape() {
+        tapectx.clearRect(0, 0, tapecanvas.width, tapecanvas.height);
+
+        tapectx.font = "24px Arial";
+        tapectx.fillStyle = "black";
+        tapectx.textAlign = "center";
+        for (let i=0; i<Math.min(11,tape.right.length); i++) {
+            tapectx.fillText(tape.right.charAt(i), bx((i+10)/20.0)+offset, 5.5*tapecanvas.height/10+6);
+        }
+
+        for (let i=0; i<Math.min(10, tape.left.length); i++) {
+            tapectx.fillText(tape.left.charAt(i), bx((9-i)/20.0)+offset, 5.5*tapecanvas.height/10+6)
+        }
+
+        for (let i=-1; i<22; i++) {
+            tapectx.beginPath();
+            tapectx.rect(bx(i/20.0)-bx(0.025)+offset, 2*tapecanvas.height/10, bx(0.05), 7*tapecanvas.height/10);
+            tapectx.stroke();
+            tapectx.beginPath();
+            tapectx.moveTo(tapecanvas.width/2-5,tapecanvas.height/10);
+            tapectx.lineTo(tapecanvas.width/2+5,tapecanvas.height/10);
+            tapectx.lineTo(tapecanvas.width/2,2*tapecanvas.height/10);
+            tapectx.closePath();
+            tapectx.fill();
+        }
+    }
+
+    function moveLeft(cont=false) {
+        offset = 0;
+        int = setInterval(function(){
+            offset++;
+            updateTape();
+            if (offset > bx(0.05)) {
+                clearInterval(int);
+                offset = 0;
+                tape.right = tape.popleft() + tape.right;
+                if (end.includes(curstate) && <?php echo $machine_type == TM ? 1: 0 ?>)
+                    alert("Match");
+                else if (cont)
+                    setTimeout(nextStep, 200, true);
+            }
+        },5);
+    }
+
+    function moveRight(cont=false) {
+        offset = 0;
+        int = setInterval(function(){
+            offset--;
+            updateTape();
+            if (offset < -bx(0.05)) {
+                clearInterval(int);
+                offset = 0;
+                tape.left = tape.popright() + tape.left;
+                if (end.includes(curstate) && <?php echo $machine_type == TM ? 1: 0 ?>)
+                    alert("Match");
+                else if (cont)
+                    setTimeout(nextStep, 200, true);
+            }
+        },5);
+    }
+
+    function load() {
+        input = prompt("Enter an input to run");
+        tape.load(input);
+        updateTape();
+        reset();
+    }
+
+    function nextStep(cont=false) {
+        for (s=0; s<states.length; s++) {
+            state = states[s];
+            if (state.name === curstate) {
+                for (t=0; t<state.transitions.length; t++) {
+                    transition = state.transitions[t];
+                    if (transition.read == tape.read() && pdaStack.peek(transition.readStack)) {
+                        <?php if ($machine_type == PDA) { ?>
+                            pdaStack.pop(transition.readStack);
+                            pdaStack.push(transition.write);
+                        <?php } else { ?>
+                            tape.write(transition.write);
+                        <?php } ?>
+                        curstate = transition.end.name;
+                        if (transition.direction == "<")
+                            moveLeft(cont);
+                        else
+                            moveRight(cont);
+                        return;
+                    }
+                }
+                break;
+            }
+        }
+        if (end.includes(curstate))
+            alert("Match");
+        else
+            alert("No match");
+    }
+
+    function reset() {
+        curstate = start;
+        tape.load(input);
+        pdaStack.clear();
+    }
+
+    function run() {
+        reset();
+        nextStep(true);
     }
 </script>
