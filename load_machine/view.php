@@ -25,16 +25,13 @@ generateHeader($head); ?>
     <div id="canvas-container" style="height: 85%;">
         <canvas id="canvas" height="500" width="600" style="border: 1px solid black"></canvas>
         <div class="center-align">
-            <a onclick="save()" class="btn btn-large waves-effect waves-light blue lighten-1">Save</a>
+            <a onclick="submitMachine()" class="btn btn-large waves-effect waves-light blue lighten-1">Submit</a>
             <a onclick="load()" class="btn btn-large waves-effect waves-light blue lighten-1">Load Input</a>
             <a onclick="run()" id="run-button" class="btn btn-large waves-effect waves-light blue lighten-1">Run</a>
             <a onclick="nextStep()" class="btn btn-large waves-effect waves-light blue lighten-1">Step</a>
         </div>
     </div>
 
-<div class="center-align">
-    <a onclick="submitMachine()" style="margin-bottom:3%" class="btn btn-large waves-effect waves-light blue lighten-1">Submit</a>
-</div>
 
 
 
@@ -700,6 +697,7 @@ generateHeader($head); ?>
 
             alert("You got " + correct + " correct out of " + total + ".");
             save();
+            location.href = "./index.php?action=show_form&room_code=<?php echo $room_code ?>&question_num=<?php echo ((int) $question_num) + 1?>"
         }
     }
 </script>

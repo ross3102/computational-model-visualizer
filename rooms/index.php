@@ -20,8 +20,7 @@ switch ($action) {
         break;
     case "join_room_again":
         $room_code = filter_input(INPUT_GET, "room_code");
-        $question1 = get_questions_by_room_code($room_code)[0];
-        header("Location: ../load_machine/index.php?question_id=".$question1["question_id"]);
+        header("Location: ../load_machine/index.php?room_code=". $room_code . "&question_num=0");
         break;
     case "create_room":
         $name = filter_input(INPUT_POST, "room_name");

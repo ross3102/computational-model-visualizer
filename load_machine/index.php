@@ -27,7 +27,9 @@ switch ($action) {
         create_machine($machine_type, $current_user["user_id"], $question_id, $start_state, $transitions, $end_state);
         break;
     case "show_form":
-        $question_id = filter_input(INPUT_GET, "question_id");
+        $room_code = filter_input(INPUT_GET, "room_code");
+        $question_num = filter_input(INPUT_GET, "question_num");
+        $question_id = get_questions_by_room_code($room_code)[(int) $question_num]["question_id"];
         $question = get_question_by_id($question_id);
         $machine_type = $question["machine_type"];
         include 'view.php';

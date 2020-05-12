@@ -6,9 +6,6 @@ $action = filter_input(INPUT_GET, "action");
 
 switch($action) {
     case "authenticate":
-        if(isset($current_user["first_name"])){
-            header('Location: rooms/index.php');
-        }
         $first_name = filter_input(INPUT_GET, "first_name");
         $last_name = filter_input(INPUT_GET, "last_name");
         $email = filter_input(INPUT_GET, "email");
@@ -22,6 +19,10 @@ switch($action) {
         setcookie("session", "", time() - 3600);
         $current_user = array();
         break;
+}
+
+if(isset($current_user["first_name"])){
+    header('Location: rooms/index.php');
 }
 
 include 'view.php';
