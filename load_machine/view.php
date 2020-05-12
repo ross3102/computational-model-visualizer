@@ -28,7 +28,7 @@ generateHeader($head); ?>
             <a onclick="submitMachine()" class="btn btn-large waves-effect waves-light blue lighten-1">Submit</a>
             <a onclick="load()" class="btn btn-large waves-effect waves-light blue lighten-1">Load Input</a>
             <a onclick="run()" id="run-button" class="btn btn-large waves-effect waves-light blue lighten-1">Run</a>
-            <a onclick="nextStep()" class="btn btn-large waves-effect waves-light blue lighten-1">Step</a>
+            <a onclick="nextStep(false, true)" class="btn btn-large waves-effect waves-light blue lighten-1">Step</a>
         </div>
     </div>
 
@@ -597,6 +597,15 @@ generateHeader($head); ?>
     }
 
     function moveLeft(cont=false) {
+        tape.right = tape.popleft() + tape.right;
+        if (end.includes(curstate) && <?php echo $machine_type == TM ? 1: 0 ?>) {
+            return true;
+        } else if (cont) {
+            return nextStep(cont, false);
+        }
+    }
+
+    function animateLeft(cont=false) {
         offset = 0;
         int = setInterval(function(){
             offset++;
@@ -605,15 +614,25 @@ generateHeader($head); ?>
                 clearInterval(int);
                 offset = 0;
                 tape.right = tape.popleft() + tape.right;
-                if (end.includes(curstate) && <?php echo $machine_type == TM ? 1: 0 ?>)
+                if (end.includes(curstate) && <?php echo $machine_type == TM ? 1: 0 ?>) {
                     alert("Match");
-                else if (cont)
-                    setTimeout(nextStep, 200, true);
+                } else if (cont) {
+                    setTimeout(nextStep, 200, cont, true);
+                }
             }
         },5);
     }
 
     function moveRight(cont=false) {
+        tape.left = tape.popright() + tape.left;
+        if (end.includes(curstate) && <?php echo $machine_type == TM ? 1: 0 ?>) {
+            return true;
+        } else if (cont) {
+            return nextStep(cont, false);
+        }
+    }
+
+    function animateRight(cont=false) {
         offset = 0;
         int = setInterval(function(){
             offset--;
@@ -622,10 +641,11 @@ generateHeader($head); ?>
                 clearInterval(int);
                 offset = 0;
                 tape.left = tape.popright() + tape.left;
-                if (end.includes(curstate) && <?php echo $machine_type == TM ? 1: 0 ?>)
+                if (end.includes(curstate) && <?php echo $machine_type == TM ? 1: 0 ?>) {
                     alert("Match");
-                else if (cont)
-                    setTimeout(nextStep, 200, true);
+                } else if (cont) {
+                    setTimeout(nextStep, 200, cont, true);
+                }
             }
         },5);
     }
@@ -637,7 +657,7 @@ generateHeader($head); ?>
         reset();
     }
 
-    function nextStep(cont=false) {
+    function nextStep(cont=false, animate=false) {
         for (s=0; s<states.length; s++) {
             state = states[s];
             if (state.name === curstate) {
@@ -651,20 +671,26 @@ generateHeader($head); ?>
                             tape.write(transition.write);
                         <?php } ?>
                         curstate = transition.end.name;
-                        if (transition.direction == "<")
-                            moveLeft(cont);
-                        else
-                            moveRight(cont);
+                        if (transition.direction == "<") {
+                            if (animate) animateLeft(cont);
+                            else return moveLeft(cont);
+                        } else {
+                            if (animate) animateRight(cont);
+                            else return moveRight(cont);
+                        }
                         return;
                     }
                 }
                 break;
             }
         }
-        if (end.includes(curstate))
-            return true;
-        else
+        if (end.includes(curstate)) {
+            if (animate) alert("Match");
+            return true
+        } else {
+            if (animate) alert("No match");
             return false;
+        }
     }
 
     function reset() {
@@ -673,9 +699,9 @@ generateHeader($head); ?>
         pdaStack.clear();
     }
 
-    function run() {
+    function run(animate=true) {
         reset();
-        return nextStep(true);
+        return nextStep(true, animate);
     }
 
     function submitMachine() {
@@ -684,9 +710,8 @@ generateHeader($head); ?>
 
         if(confirm("Are you sure you want to submit?")) {
             <?php foreach(get_test_cases($question_id) as $case) { ?>
-                tape.load('<?php echo $case["input"]?>');
-                reset();
-                if(run()) {
+                input = '<?php echo $case["input"]?>';
+                if(run(false) == <?php echo $case["pass"] ? 1: 0 ?>) {
                     correct += 1;
                 }
                 total += 1;
