@@ -13,7 +13,7 @@ if (!isset($action)) {
 switch ($action) {
     case "join_room":
         $room_code = filter_input(INPUT_POST, "room_code");
-        join_room($user_id, hexdec($room_code));
+        join_room($current_user["user_id"], hexdec($room_code));
         header("Location: ./index.php");
         break;
     case "join_room_again":
@@ -24,7 +24,7 @@ switch ($action) {
     case "create_room":
         $name = filter_input(INPUT_POST, "room_name");
         $desc = filter_input(INPUT_POST, "room_desc");
-        create_room($user_id, $name, $desc);
+        create_room($current_user["user_id"], $name, $desc);
         header("Location: ./index.php");
         break;
     case "edit_room":
@@ -40,7 +40,7 @@ switch ($action) {
         header("Location: ./index.php");
         break;
     case "list_rooms":
-        $rooms = get_rooms($user_id);
-        $joined_rooms = get_joined_rooms($user_id);
+        $rooms = get_rooms($current_user["user_id"]);
+        $joined_rooms = get_joined_rooms($current_user["user_id"]);
         include "./view.php";
 }

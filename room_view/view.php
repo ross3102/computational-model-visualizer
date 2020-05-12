@@ -8,7 +8,10 @@ generateHeader(""); ?>
         <h5 style="text-decoration: underline;">Questions</h5>
         <ul class="collection">
             <?php foreach ($questions as $question) { ?>
-                <li class="collection-item"><?php echo $question["text"] ?><span class="badge"><a href="#displaytest" class="modal-trigger"><i class="material-icons black-text">pregnant_woman</i></a><a onclick=write_test(<?php echo $question["question_id"]?>)><i class="material-icons blue-text">assignment</i></a><a href="./index.php?action=delete_question&question_id=<?php echo $question["question_id"] ?>&room_id=<?php echo $room_id ?>"><i class="material-icons red-text">delete</i></a></span></li>
+                <li class="collection-item"><?php echo $question["text"] ?>
+                    <span class="badge">
+                        <a onclick="show_test(<?php echo $question["question_id"] ?>)" style="cursor: pointer"><i class="material-icons blue-text">assignment</i></a>
+                        <a href="./index.php?action=delete_question&question_id=<?php echo $question["question_id"] ?>&room_id=<?php echo $room_id ?>"><i class="material-icons red-text">delete</i></a></span></li>
             <?php } ?>
         </ul>
         <div class="center-align">
@@ -24,12 +27,12 @@ generateHeader(""); ?>
                             <input type="hidden" name="question_id" id="question_id">
                             <input type="hidden" name="room_id" value="<?php echo $room_id ?>">
                             <div class="input-field">
-                                <textarea class="materialize-textarea" name="test_case" id="test_case"></textarea>
-                                <label for="test_case">Test Case</label>
+                                <textarea class="materialize-textarea" name="test_input" id="test_input"></textarea>
+                                <label for="test_case">Test Input</label>
                             </div>
                             <div class="input-field">
-                                <input type="text" name="fail" id="fail">
-                                <label for="fail">Pass or Fail (P/F)</label>
+                                <input type="text" name="pass" id="pass">
+                                <label for="pass">Pass or Fail (P/F)</label>
                             </div>
                         </form>
                 </div>
@@ -41,11 +44,12 @@ generateHeader(""); ?>
             <div class="modal" id="displaytest">
                 <div class="modal-container">
                     <h4 class="modal-header">Test Cases</h4>
-                    <ul class="collection">
-                        <?php foreach ($questions as $question) {?>
-                        <li class="collection-item"></li>
-                        <?php } ?>
+                    <ul class="collection" id="case-list">
                     </ul>
+                    <a class="btn-floating btn-large waves-effect waves-light blue" id="add-case-btn"><i class="material-icons">add</i></a>
+                </div>
+                <div class="modal-footer">
+                    <a class="modal-close waves-effect waves-green btn-flat red-text">Close</a>
                 </div>
             </div>
             <div class="modal" id="add-questionm">
@@ -57,6 +61,14 @@ generateHeader(""); ?>
                         <div class="input-field">
                             <input type="text" name="question_name" id="question_name">
                             <label for="question_name">Question Statement</label>
+                        </div>
+                        <div class="input-field">
+                            <select name="machine_type" id="machine-type-select">
+                                <?php foreach ($machine_types as $type) { ?>
+                                    <option value="<?php echo $type['type_cde'] ?>"><?php echo $type["type_name"] ?></option>
+                                <?php } ?>
+                            </select>
+                            <label for="machine-type-select">Machine Type</label>
                         </div>
                     </form>
                 </div>
@@ -70,11 +82,39 @@ generateHeader(""); ?>
     </div>
     </div>
 </div>
+
+<?php generateFooter() ?>
+
 <script>
     function write_test(question_id) {
         $("#writetests #question_id").val(question_id);
         $("#writetests").modal("open");
     }
-</script>
-<?php generateFooter() ?>
 
+    function show_test(question_id) {
+        $.ajax({
+            url: "./index.php",
+            method: "GET",
+            data: {
+                "action": "get_test_cases",
+                "question_id": question_id
+            },
+            success: function (response) {
+                let cases = response.cases;
+                let content = "";
+                cases.forEach(function (test_case) {
+                    content += "<li class='collection-item'>" + test_case["input"] + "<span class='badge'>" + (test_case["pass"] == 1 ? "P": "F") + "</span></li>"
+                });
+                $("#case-list").html(content);
+                $("#add-case-btn").attr("data-question-id", question_id);
+                $("#displaytest").modal("open");
+            }
+        })
+    }
+
+    $("#add-case-btn").click(function () {
+        let question_id = $(this).attr("data-question-id");
+        $("#addtest #question_id").val(question_id);
+        $("#writetests").modal("open");
+    })
+</script>
