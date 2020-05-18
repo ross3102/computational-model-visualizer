@@ -19,6 +19,9 @@ if (!isset($action)) {
 switch ($action) {
     case "save_machine":
         $question_id = filter_input(INPUT_POST, "question_id");
+        if (answered($question_id, $current_user["user_id"])) {
+            exit();
+        }
         $start_state = filter_input(INPUT_POST, "start_state");
         $transitions = str_replace("\n", ";", str_replace("\r\n","\n", filter_input(INPUT_POST, "transitions")));
         $end_state = filter_input(INPUT_POST, "end_state");

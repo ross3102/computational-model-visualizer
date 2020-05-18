@@ -719,8 +719,8 @@ generateHeader($head); ?>
                 total += 1;
             <?php } ?>
 
-            alert("You got " + correct + " correct out of " + total + ".");
             save(correct);
+            alert("You got " + correct + " correct out of " + total + ".");
             location.href = "./index.php?action=show_form&room_code=<?php echo $room_code ?>&question_num=<?php echo ((int) $question_num) + 1?>"
         }
     }
