@@ -30,7 +30,6 @@
             <div class="row">
                 <a href="#create-modal" class="col s12 btn btn-large blue lighten-1 waves-effect waves-light modal-trigger" style="margin-bottom: 40px;">Create</a>
                 <a href="#join-modal" class="col s12 btn btn-large blue lighten-1 waves-effect waves-light modal-trigger" style="margin-bottom: 40px;">Join</a>
-                <a onclick="location.href='../load_machine'" class="col s12 btn btn-large blue lighten-1 waves-effect waves-light">Editor</a>
             </div>
         </div>
     </div>
