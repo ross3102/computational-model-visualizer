@@ -534,7 +534,7 @@ generateHeader($head); ?>
     //     M.updateTextFields();
     // }
 
-    function save() {
+    function save(correct) {
         let transitionString = "";
         let endString = "";
         states.forEach(function(state) {
@@ -552,6 +552,7 @@ generateHeader($head); ?>
         end.forEach(function(endName) {
             endString += endName + " ";
         });
+
         $.ajax({
             url: "./index.php",
             method: "POST",
@@ -561,7 +562,8 @@ generateHeader($head); ?>
                 machine_type: <?php echo $machine_type ?>,
                 start_state: start,
                 transitions: transitionString,
-                end_state: endString
+                end_state: endString,
+                correct: correct
             },
             success: function () {
                 M.toast({html: "Saved"})
@@ -718,7 +720,7 @@ generateHeader($head); ?>
             <?php } ?>
 
             alert("You got " + correct + " correct out of " + total + ".");
-            save();
+            save(correct);
             location.href = "./index.php?action=show_form&room_code=<?php echo $room_code ?>&question_num=<?php echo ((int) $question_num) + 1?>"
         }
     }

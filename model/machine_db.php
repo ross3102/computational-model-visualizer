@@ -311,6 +311,27 @@ function get_users_by_room($room_id) {
     }
 }
 
+function answered($question_id, $user_id) {
+    global $db;
+
+    try {
+        $query = "select * from machine
+              where question_id = :question_id
+              and creator_id = :user_id";
+
+        $statement = $db->prepare($query);
+        $statement->bindValue(":question_id", $question_id);
+        $statement->bindValue(":user_id", $user_id);
+        $statement->execute();
+        $result = $statement->fetchAll();
+        $statement->closeCursor();
+        return count($result) == 1;
+    } catch (PDOException $e) {
+        echo $e;
+        exit();
+    }
+}
+
 function get_questions_by_room($room_id) {
     global $db;
 
@@ -388,12 +409,12 @@ function update_hash($room_id, $hash) {
         exit();
     }
 }
-function create_machine($type_cde, $creator_id, $question_id, $start_state, $transitions, $end_state) {
+function create_machine($type_cde, $creator_id, $question_id, $start_state, $transitions, $end_state, $correct) {
     global $db;
 
     try {
-        $query = "insert into machine (type_cde, creator_id, question_id, start_state, transitions, end_state) 
-                  values (:type_cde, :creator_id, :question_id, :start_state, :transitions, :end_state)";
+        $query = "insert into machine (type_cde, creator_id, question_id, start_state, transitions, end_state, score) 
+                  values (:type_cde, :creator_id, :question_id, :start_state, :transitions, :end_state, :correct)";
 
         $statement = $db->prepare($query);
         $statement->bindValue(":type_cde", $type_cde);
@@ -402,6 +423,7 @@ function create_machine($type_cde, $creator_id, $question_id, $start_state, $tra
         $statement->bindValue(":start_state", $start_state);
         $statement->bindValue(":transitions", $transitions);
         $statement->bindValue(":end_state", $end_state);
+        $statement->bindValue(":correct", $correct);
         $statement->execute();
         $statement->closeCursor();
     } catch (PDOException $e) {
