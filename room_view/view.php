@@ -18,7 +18,7 @@ generateHeader(""); ?>
             <a href="#add-questionm" class="btn btn-large btn-floating waves-effect waves-light blue lighten-1 modal-trigger"><i class="material-icons">add</i></a>
             <br>
             <br>
-            <a href="./index.php?action=create&room_id=<?php echo $room_id ?>" class="btn btn-large waves-effect waves-light blue lighten-1"><?php echo $room["room_code"] == null ? "Open Room": "View Room" ?></a>
+            <a href="./index.php?action=create&room_id=<?php echo $room_id ?>" class="btn btn-large waves-effect waves-light blue lighten-1"><?php echo $room["room_code"] == null ? "Open Room": "View Members/Scores" ?></a>
             <div class="modal" id="writetests">
                 <div class="modal-content">
                     <h4 class="modal-header">Write a Test Case!</h4>
