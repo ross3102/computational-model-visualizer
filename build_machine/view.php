@@ -238,7 +238,7 @@ generateHeader($head); ?>
         ctx.stroke();
 
         ctx.save();
-        ctx.translate((x1 + x2) / 2 + (x2 > x1 ? -10 : 10), (y1 + y2) / 2 + (y2 > y1 ? 10 : 0));
+        ctx.translate((x1 + x2) / 2, (y1 + y2) / 2);
         ctx.rotate(Math.atan((y2 - y1) / (x2 - x1)));
         ctx.textAlign = "center";
         ctx.fillText(text, 0, 0);
@@ -264,24 +264,7 @@ generateHeader($head); ?>
         y2 = by(y2);
         b = bx(b);
 
-        if (x1 == x2 && y1 == y2) {
-            ctx.beginPath();
-            ctx.arc(x1,y1-b,b,Math.PI/6,5*Math.PI/6,true);
-            var headlen = 10;
-            var angle = 2*Math.PI/3;
-            var tox = x1 + b*Math.cos(Math.PI/6),
-                toy = y1 - b*Math.sin(Math.PI/6);
-            ctx.moveTo(tox, toy);
-            ctx.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
-            ctx.moveTo(tox, toy);
-            ctx.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
-            ctx.stroke();
-
-            ctx.font = "12px Arial";
-            ctx.fillStyle = "black";
-            ctx.textAlign = "center";
-            ctx.fillText(text, x1, y1 - 2*b-2);
-        } else {
+         {
             let d = dist(x1, y1, x2, y2);
 
             let nx1 = sx(x1 + (x2 - x1) * b / d),
@@ -321,22 +304,15 @@ generateHeader($head); ?>
         ctx.textAlign = "center";
         ctx.fillText("Trash", bx(0.085), by(0.6));
 
-        if (dragging) {
-            drawCircle(dragging);
-            dragging.transitions.forEach(function (tr) {
-                let transText = "";
-                <?php if ($machine_type == FSM) { ?>
-                    transText = tr.read;
-                <?php } else if ($machine_type == PDA) { ?>
-                    transText = tr.read + ", " + tr.readStack + " -> " + tr.write;
-                <?php } else { ?>
-                    transText = tr.read + ", " + tr.write + ", " + tr.direction;
-                <?php } ?>
-                drawLineBuffer(dragging.x, dragging.y, tr.end.x, tr.end.y, radius, transText);
-            });
-        }
+        states.concat(dragging ? [dragging]: []).forEach(function (state) {
+            let modifier_x = 0,
+                modifier_y = 0;
 
-        states.forEach(function (state) {
+            let x = 0,
+                y = 0;
+
+            let end_list = {};
+
             drawCircle(state);
             state.transitions.forEach(function (tr) {
                 let transText = "";
@@ -347,7 +323,120 @@ generateHeader($head); ?>
                 <?php } else { ?>
                 transText = tr.read + ", " + tr.write + ", " + tr.direction;
                 <?php } ?>
-                drawLineBuffer(state.x, state.y, tr.end.x, tr.end.y, radius, transText)
+
+                x1 = bx(state.x)
+                x2 = bx(tr.end.x)
+                y1 = by(state.y)
+                y2 = by(tr.end.y)
+
+                if (y1 == y2 && x1 == x2) {
+                    modifier_x = 1;
+                    modifier_y = 1;
+                    x = x1;
+                    y = y1 - bx(radius)*2 + 12 - 15 * ((end_list[tr.end.name] || 0) + 1)
+                    arrow_start_x = x1;
+                    arrow_start_y = y1;
+                    arrow_x = x2;
+                    arrow_y = y2;
+                } else if (y1 == y2) {
+                    if (x2 > x1) {
+                        modifier_x = 0
+                        modifier_y = -1
+                        arrow_start_x = x1 + bx(radius)
+                        arrow_x = x2 - bx(radius)
+                    } else {
+                        modifier_x = 0
+                        modifier_y = 1
+                        arrow_start_x = x1 - bx(radius)
+                        arrow_x = x2 + bx(radius)
+                    }
+
+                    x = (x1 + x2) / 2
+                    y = y1 + modifier_y * 15 * ((end_list[tr.end.name] || 0) + 1)
+                    arrow_start_y = y1
+                    arrow_y = y2
+                } else if (x2 == x1) {
+                    if (y2 > y1) {
+                        modifier_x = 1
+                        modifier_y = 0
+                        arrow_start_y = y1 + bx(radius)
+                        arrow_y = y2 - bx(radius)
+                    } else {
+                        modifier_x = -1
+                        modifier_y = 0
+                        arrow_start_y = y1 - bx(radius)
+                        arrow_y = y2 + bx(radius)
+                    }
+
+                    x = x1 + modifier_x * 15 * ((end_list[tr.end.name] || 0) + 1)
+                    y = (y1 + y2) / 2
+                    arrow_start_x = x1
+                    arrow_x = x2
+                } else {
+                    slope = -(x2 - x1) / (y2 - y1)
+                    arrow_slope = (y1 - y2) / (x1 - x2)
+                    if (x2 - x1 < 0) {
+                        if (y2 - y1 < 0) {
+                            modifier_y = 1
+                            modifier_x = -1
+                        } else {
+                            modifier_y = 1
+                            modifier_x = 1
+                        }
+                        arrow_start_y = bx(radius) * -arrow_slope / Math.sqrt(arrow_slope ** 2 + 1) + y1
+                        arrow_y = bx(radius) * arrow_slope / Math.sqrt(arrow_slope ** 2 + 1) + y2
+                    } else {
+                        if (y2 - y1 < 0) {
+                            modifier_y = -1
+                            modifier_x = -1
+                        } else {
+                            modifier_y = -1
+                            modifier_x = 1
+                        }
+                        arrow_start_y = bx(radius) * arrow_slope / Math.sqrt(arrow_slope ** 2 + 1) + y1
+                        arrow_y = -bx(radius) * arrow_slope / Math.sqrt(arrow_slope ** 2 + 1) + y2
+                    }
+                    y = modifier_y * 15 * ((end_list[tr.end.name] || 0) + 1) * Math.abs(slope) / Math.sqrt(slope ** 2 + 1) + (y2 + y1) / 2
+                    x = (y - (y2 + y1) / 2) / slope + (x2 + x1) / 2
+                    arrow_start_x = (arrow_start_y - y1) / arrow_slope + x1
+                    arrow_x = (arrow_y - y2) / arrow_slope + x2
+                }
+
+                end_list[tr.end.name] = (end_list[tr.end.name] || 0) + 1;
+
+                arrow_start_x += modifier_x * 3
+                arrow_x += modifier_x * 3
+                arrow_start_y += modifier_y * 3
+                arrow_y += modifier_y * 3
+                if (x1 == x2 && y1 == y2) {
+                    ctx.beginPath();
+                    ctx.arc(x1,y1-bx(radius),bx(radius),Math.PI/6,5*Math.PI/6,true);
+                    var headlen = 10;
+                    var angle = 2*Math.PI/3;
+                    var tox = x1 + bx(radius)*Math.cos(Math.PI/6),
+                        toy = y1 - bx(radius)*Math.sin(Math.PI/6);
+                    ctx.moveTo(tox, toy);
+                    ctx.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
+                    ctx.moveTo(tox, toy);
+                    ctx.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
+                    ctx.stroke();
+
+                    ctx.font = "12px Arial";
+                    ctx.fillStyle = "black";
+                    ctx.textAlign = "center";
+                    ctx.fillText(transText, x, y);
+                } else {
+                    drawLine(sx(arrow_start_x), sy(arrow_start_y), sx(arrow_x), sy(arrow_y), "");
+                    ctx.save();
+                    ctx.translate(x, y);
+                    ctx.rotate(Math.atan((y2 - y1) / (x2 - x1)));
+                    ctx.font = "12px Arial";
+                    ctx.fillStyle = "black";
+                    ctx.textAlign = "center";
+                    ctx.fillText(transText, 0, 0);
+                    ctx.restore();
+                }
+
             });
         });
 
