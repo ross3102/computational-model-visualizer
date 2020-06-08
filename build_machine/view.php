@@ -19,17 +19,18 @@ generateHeader($head); ?>
 <h4 style="margin: 2px"><?php echo $question["text"] ?></h4>
 
 <!--<div class="row" style="height: 100%;">-->
-    <div id="tape-container" style="height: 15%;">
+    <div id="tape-container" style="height: 100px;">
         <canvas id="tape"></canvas>
     </div>
-    <div id="canvas-container" style="height: 85%;">
+    <div id="canvas-container" style="height: 400px;">
         <canvas id="canvas" height="500" width="600" style="border: 1px solid black"></canvas>
-        <div class="center-align">
-            <a onclick="submitMachine()" class="btn btn-large waves-effect waves-light blue lighten-1">Submit</a>
-            <a onclick="load()" class="btn btn-large waves-effect waves-light blue lighten-1">Load Input</a>
-            <a onclick="run()" id="run-button" class="btn btn-large waves-effect waves-light blue lighten-1">Run</a>
-            <a onclick="nextStep(false, true)" class="btn btn-large waves-effect waves-light blue lighten-1">Step</a>
-        </div>
+    </div>
+    <br>
+    <div class="center-align">
+        <a onclick="submitMachine()" class="btn btn-large waves-effect waves-light blue lighten-1">Submit</a>
+        <a onclick="load()" class="btn btn-large waves-effect waves-light blue lighten-1">Load Input</a>
+        <a onclick="run()" class="btn btn-large waves-effect waves-light blue lighten-1" id="run-button">Run</a>
+        <a onclick="pause(); nextStep(true)" class="btn btn-large waves-effect waves-light blue lighten-1" id="step-button">Step</a>
     </div>
 
 <?php generateFooter(); ?>
@@ -167,6 +168,7 @@ generateHeader($head); ?>
     let offset = 0;
     let input = "";
     let curstate = "";
+    let running = false;
 
     function bx(x) {
         return x*canvas.width;
@@ -193,14 +195,14 @@ generateHeader($head); ?>
         tapecanvas.width = $("#canvas-container").width();
         tapecanvas.height = $("#tape-container").height();
         canvas.width  = $("#canvas-container").width();
-        canvas.height = $("#canvas-container").height() - $("h4").height() - $(".btn-large").height() - 10;
+        canvas.height = $("#canvas-container").height();
     }
 
     function drawCircle(state) {
         ctx.strokeStyle = 'rgb(0, 0, 0)';
 
         if (state.name == curstate && curstate != "")
-            ctx.strokeStyle = 'rgb(0, 0, 255)';
+            ctx.strokeStyle = 'rgb(255, 0, 0)';
 
         ctx.beginPath();
         let scaledX = bx(state.x),
@@ -324,90 +326,83 @@ generateHeader($head); ?>
                 transText = tr.read + ", " + tr.write + ", " + tr.direction;
                 <?php } ?>
 
-                x1 = bx(state.x)
-                x2 = bx(tr.end.x)
-                y1 = by(state.y)
-                y2 = by(tr.end.y)
+                let x1 = bx(state.x),
+                    x2 = bx(tr.end.x),
+                    y1 = by(state.y),
+                    y2 = by(tr.end.y);
+
+                let arrow_start_x = x1,
+                    arrow_start_y = y1,
+                    arrow_x = x2,
+                    arrow_y = y2;
 
                 if (y1 == y2 && x1 == x2) {
                     modifier_x = 1;
                     modifier_y = 1;
                     x = x1;
-                    y = y1 - bx(radius)*2 + 12 - 15 * ((end_list[tr.end.name] || 0) + 1)
-                    arrow_start_x = x1;
-                    arrow_start_y = y1;
-                    arrow_x = x2;
-                    arrow_y = y2;
+                    y = y1 - bx(radius)*2 + 12 - 15 * ((end_list[tr.end.name] || 0) + 1);
                 } else if (y1 == y2) {
                     if (x2 > x1) {
-                        modifier_x = 0
-                        modifier_y = -1
-                        arrow_start_x = x1 + bx(radius)
-                        arrow_x = x2 - bx(radius)
+                        modifier_x = 0;
+                        modifier_y = -1;
+                        arrow_start_x = x1 + bx(radius);
+                        arrow_x = x2 - bx(radius);
                     } else {
-                        modifier_x = 0
-                        modifier_y = 1
-                        arrow_start_x = x1 - bx(radius)
-                        arrow_x = x2 + bx(radius)
+                        modifier_x = 0;
+                        modifier_y = 1;
+                        arrow_start_x = x1 - bx(radius);
+                        arrow_x = x2 + bx(radius);
                     }
 
-                    x = (x1 + x2) / 2
-                    y = y1 + modifier_y * 15 * ((end_list[tr.end.name] || 0) + 1)
-                    arrow_start_y = y1
-                    arrow_y = y2
+                    x = (x1 + x2) / 2;
+                    y = y1 + modifier_y * 15 * ((end_list[tr.end.name] || 0) + 1);
                 } else if (x2 == x1) {
                     if (y2 > y1) {
-                        modifier_x = 1
-                        modifier_y = 0
-                        arrow_start_y = y1 + bx(radius)
-                        arrow_y = y2 - bx(radius)
+                        modifier_x = 1;
+                        modifier_y = 0;
+                        arrow_start_y = y1 + bx(radius);
+                        arrow_y = y2 - bx(radius);
                     } else {
-                        modifier_x = -1
-                        modifier_y = 0
-                        arrow_start_y = y1 - bx(radius)
-                        arrow_y = y2 + bx(radius)
+                        modifier_x = -1;
+                        modifier_y = 0;
+                        arrow_start_y = y1 - bx(radius);
+                        arrow_y = y2 + bx(radius);
                     }
 
-                    x = x1 + modifier_x * 15 * ((end_list[tr.end.name] || 0) + 1)
-                    y = (y1 + y2) / 2
-                    arrow_start_x = x1
-                    arrow_x = x2
+                    x = x1 + modifier_x * 15 * ((end_list[tr.end.name] || 0) + 1);
+                    y = (y1 + y2) / 2;
                 } else {
-                    slope = -(x2 - x1) / (y2 - y1)
-                    arrow_slope = (y1 - y2) / (x1 - x2)
+                    let slope = -(x2 - x1) / (y2 - y1),
+                        arrow_slope = (y1 - y2) / (x1 - x2);
                     if (x2 - x1 < 0) {
                         if (y2 - y1 < 0) {
-                            modifier_y = 1
-                            modifier_x = -1
+                            modifier_y = 1;
+                            modifier_x = -1;
                         } else {
-                            modifier_y = 1
-                            modifier_x = 1
+                            modifier_y = 1;
+                            modifier_x = 1;
                         }
-                        arrow_start_y = bx(radius) * -arrow_slope / Math.sqrt(arrow_slope ** 2 + 1) + y1
-                        arrow_y = bx(radius) * arrow_slope / Math.sqrt(arrow_slope ** 2 + 1) + y2
+                        arrow_start_y = bx(radius) * -arrow_slope / Math.sqrt(arrow_slope ** 2 + 1) + y1;
+                        arrow_y = bx(radius) * arrow_slope / Math.sqrt(arrow_slope ** 2 + 1) + y2;
                     } else {
                         if (y2 - y1 < 0) {
-                            modifier_y = -1
-                            modifier_x = -1
+                            modifier_y = -1;
+                            modifier_x = -1;
                         } else {
-                            modifier_y = -1
-                            modifier_x = 1
+                            modifier_y = -1;
+                            modifier_x = 1;
                         }
-                        arrow_start_y = bx(radius) * arrow_slope / Math.sqrt(arrow_slope ** 2 + 1) + y1
-                        arrow_y = -bx(radius) * arrow_slope / Math.sqrt(arrow_slope ** 2 + 1) + y2
+                        arrow_start_y = bx(radius) * arrow_slope / Math.sqrt(arrow_slope ** 2 + 1) + y1;
+                        arrow_y = -bx(radius) * arrow_slope / Math.sqrt(arrow_slope ** 2 + 1) + y2;
                     }
-                    y = modifier_y * 15 * ((end_list[tr.end.name] || 0) + 1) * Math.abs(slope) / Math.sqrt(slope ** 2 + 1) + (y2 + y1) / 2
-                    x = (y - (y2 + y1) / 2) / slope + (x2 + x1) / 2
-                    arrow_start_x = (arrow_start_y - y1) / arrow_slope + x1
-                    arrow_x = (arrow_y - y2) / arrow_slope + x2
+                    y = modifier_y * 15 * ((end_list[tr.end.name] || 0) + 1) * Math.abs(slope) / Math.sqrt(slope ** 2 + 1) + (y2 + y1) / 2;
+                    x = (y - (y2 + y1) / 2) / slope + (x2 + x1) / 2;
+                    arrow_start_x = (arrow_start_y - y1) / arrow_slope + x1;
+                    arrow_x = (arrow_y - y2) / arrow_slope + x2;
                 }
 
                 end_list[tr.end.name] = (end_list[tr.end.name] || 0) + 1;
 
-                arrow_start_x += modifier_x * 3
-                arrow_x += modifier_x * 3
-                arrow_start_y += modifier_y * 3
-                arrow_y += modifier_y * 3
                 if (x1 == x2 && y1 == y2) {
                     ctx.beginPath();
                     ctx.arc(x1,y1-bx(radius),bx(radius),Math.PI/6,5*Math.PI/6,true);
@@ -426,6 +421,10 @@ generateHeader($head); ?>
                     ctx.textAlign = "center";
                     ctx.fillText(transText, x, y);
                 } else {
+                    arrow_start_x += modifier_x * 3;
+                    arrow_x += modifier_x * 3;
+                    arrow_start_y += modifier_y * 3;
+                    arrow_y += modifier_y * 3;
                     drawLine(sx(arrow_start_x), sy(arrow_start_y), sx(arrow_x), sy(arrow_y), "");
                     ctx.save();
                     ctx.translate(x, y);
@@ -489,7 +488,7 @@ generateHeader($head); ?>
     });
 
     canvas.addEventListener("mouseup", function (evt) {
-        if (0.025 < sx(mouseX) && sx(mouseX) < 0.175 && 0.25 < sy(mouseY) && sy(mouseY) < 0.95) {
+        if (0.025 < sx(mouseX) && sx(mouseX) < 0.145 && 0.25 < sy(mouseY) && sy(mouseY) < 0.95) {
             states.forEach(function(state) {
                 for (t=0; t<state.transitions.length; t++)
                     if (state.transitions[t].end.name === dragging.name)
@@ -687,16 +686,16 @@ generateHeader($head); ?>
         }
     }
 
-    function moveLeft(cont=false) {
+    function moveLeft() {
         tape.right = tape.popleft() + tape.right;
         if (end.includes(curstate) && <?php echo $machine_type == TM ? 1: 0 ?>) {
             return true;
-        } else if (cont) {
-            return nextStep(cont, false);
+        } else if (running) {
+            return nextStep(false);
         }
     }
 
-    function animateLeft(cont=false) {
+    function animateLeft() {
         offset = 0;
         int = setInterval(function(){
             offset++;
@@ -707,23 +706,26 @@ generateHeader($head); ?>
                 tape.right = tape.popleft() + tape.right;
                 if (end.includes(curstate) && <?php echo $machine_type == TM ? 1: 0 ?>) {
                     alert("Match");
-                } else if (cont) {
-                    setTimeout(nextStep, 200, cont, true);
+                } else if (running) {
+                    setTimeout(nextStep, 200, true);
+                } else {
+                    $("#step-button").removeAttr("disabled");
+                    $("#run-button").removeAttr("disabled");
                 }
             }
         },5);
     }
 
-    function moveRight(cont=false) {
+    function moveRight() {
         tape.left = tape.popright() + tape.left;
         if (end.includes(curstate) && <?php echo $machine_type == TM ? 1: 0 ?>) {
             return true;
-        } else if (cont) {
-            return nextStep(cont, false);
+        } else if (running) {
+            return nextStep(false);
         }
     }
 
-    function animateRight(cont=false) {
+    function animateRight() {
         offset = 0;
         int = setInterval(function(){
             offset--;
@@ -734,8 +736,11 @@ generateHeader($head); ?>
                 tape.left = tape.popright() + tape.left;
                 if (end.includes(curstate) && <?php echo $machine_type == TM ? 1: 0 ?>) {
                     alert("Match");
-                } else if (cont) {
-                    setTimeout(nextStep, 200, cont, true);
+                } else if (running) {
+                    setTimeout(nextStep, 200, true);
+                } else {
+                    $("#step-button").removeAttr("disabled");
+                    $("#run-button").removeAttr("disabled");
                 }
             }
         },5);
@@ -748,7 +753,10 @@ generateHeader($head); ?>
         reset();
     }
 
-    function nextStep(cont=false, animate=false) {
+    function nextStep(animate=false) {
+        $("#step-button").attr("disabled", "true");
+        if (!running)
+            $("#run-button").attr("disabled", "true");
         for (s=0; s<states.length; s++) {
             state = states[s];
             if (state.name === curstate) {
@@ -763,11 +771,11 @@ generateHeader($head); ?>
                         <?php } ?>
                         curstate = transition.end.name;
                         if (transition.direction == "<") {
-                            if (animate) animateLeft(cont);
-                            else return moveLeft(cont);
+                            if (animate) animateLeft();
+                            else return moveLeft();
                         } else {
-                            if (animate) animateRight(cont);
-                            else return moveRight(cont);
+                            if (animate) animateRight();
+                            else return moveRight();
                         }
                         return;
                     }
@@ -775,24 +783,57 @@ generateHeader($head); ?>
                 break;
             }
         }
+
+        $("#step-button").removeAttr("disabled");
+        $("#run-button").removeAttr("disabled");
         if (end.includes(curstate)) {
             if (animate) alert("Match");
+            done();
             return true
         } else {
             if (animate) alert("No match");
+            done();
             return false;
         }
     }
 
     function reset() {
+        running = false;
+        $("#run-button").text("Run");
+        $("#run-button").attr("onclick","run()");
+        $("#step-button").removeAttr("disabled");
         curstate = start;
         tape.load(input);
         pdaStack.clear();
     }
 
+    function pause() {
+        running = false;
+        $("#run-button").text("Run");
+        $("#run-button").attr("onclick","play()");
+        $("#step-button").removeAttr("disabled");
+    }
+
+    function play(animate=true) {
+        running = true;
+        if (animate) {
+            $("#run-button").text("Pause");
+            $("#run-button").attr("onclick", "pause()");
+            $("#step-button").attr("disabled", "true");
+        }
+        return nextStep(animate);
+    }
+
     function run(animate=true) {
         reset();
-        return nextStep(true, animate);
+        return play(animate);
+    }
+
+    function done() {
+        running = false;
+        $("#run-button").text("Reset");
+        $("#run-button").attr("onclick","reset()");
+        $("#step-button").attr("disabled", "true");
     }
 
     function submitMachine() {
