@@ -107,7 +107,7 @@ generateHeader(""); ?>
                 let cases = response.cases;
                 let content = "";
                 cases.forEach(function (test_case) {
-                    content += "<li class='collection-item'>" + test_case["input"] + "<span class='badge'>" + (test_case["pass"] == 1 ? "P": "F") + "</span></li>"
+                    content += "<li class='collection-item'>" + test_case["input"] + "<span class='badge'>" + (test_case["pass"] == 1 ? "Pass": "Fail") + "</span></li>"
                 });
                 $("#case-list").html(content);
                 $("#add-case-btn").attr("data-question-id", question_id);
