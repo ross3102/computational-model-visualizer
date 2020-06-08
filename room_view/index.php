@@ -57,7 +57,7 @@ switch ($action) {
         break;
     case "get_test_cases":
         $question_id = filter_input(INPUT_GET, "question_id");
-        if (!(is_question_owner($room_id, $current_user["user_id"]))) {
+        if (!(is_question_owner($question_id, $current_user["user_id"]))) {
             header("Location: ../rooms/index.php");
             exit();
         }
