@@ -20,7 +20,7 @@
                     <h3 class="center-align">My Joined Rooms</h3>
                     <div class="collection">
                         <?php foreach ($joined_rooms as $room) { ?>
-                            <div class="collection-item" style="cursor: pointer;" onclick="location.href='./index.php?action=join_room_again&room_code=<?php echo $room["room_code"] ?>'"><?php echo $room["name"] ?></div>
+                            <div class="collection-item" style="cursor: pointer;" onclick="location.href='./index.php?action=join_room_again&room_code=<?php echo $room["room_code"] ?>'"><?php echo $room["name"] ?><div class="secondary-content"><a class="material-icons red-text" href="./index.php?action=leave_room&room_id=<?php echo $room["room_id"] ?>">exit_to_app</a></div></div>
                         <?php } ?>
                     </div>
                 </div>

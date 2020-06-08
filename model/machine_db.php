@@ -460,6 +460,25 @@ function close_room($room_id) {
         exit();
     }
 }
+
+function leave_room($room_id, $user_id) {
+    global $db;
+
+    try {
+        $query = "delete from room_user_xref
+                    where room_id = :room_id
+                    and user_id = :user_id";
+        $statement = $db->prepare($query);
+        $statement->bindValue(":room_id", $room_id);
+        $statement->bindValue(":user_id", $user_id);
+        $statement->execute();
+        $statement->closeCursor();
+    } catch(PDOException $e) {
+        echo $e;
+        exit();
+    }
+}
+
 function get_user_by_email($email) {
     global $db;
 

@@ -40,6 +40,11 @@ switch ($action) {
         close_room($room_id);
         header("Location: ./index.php");
         break;
+    case "leave_room":
+        $room_id = filter_input(INPUT_GET, "room_id");
+        leave_room($room_id, $current_user["user_id"]);
+        header("Location: ./index.php");
+        break;
     case "list_rooms":
         $rooms = get_rooms($current_user["user_id"]);
         $joined_rooms = get_joined_rooms($current_user["user_id"]);
