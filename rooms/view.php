@@ -4,16 +4,16 @@
             <h3 class="center-align">My Rooms</h3>
             <div class="collection">
                 <?php foreach ($rooms as $room) { ?>
-                    <div class="collection-item" style="cursor: pointer;" onclick="location.href='../room_view/index.php?room_id=<?php echo $room["room_id"] ?>'"><?php echo $room["name"] ?>
-                        <span class="badge">
-                            <?php if ($room["room_code"] != null) { ?>
-                                <i class="red-text material-icons" onclick="event.stopPropagation(); location.href='./index.php?action=close_room&room_id=<?php echo $room["room_id"] ?>'">close</i>
-                            <?php }  ?>
-                            <i class="material-icons black-text" onclick="event.stopPropagation(); showDesc(<?php echo $room["room_id"] ?>, '<?php echo addslashes($room["name"]) ?>', '<?php echo addslashes($room["room_desc"]) ?>')">info</i>
-                            <i class="material-icons red-text" onclick="event.stopPropagation(); deleteRoom(<?php echo $room["room_id"] ?>)">delete</i>
-                        </span>
-                    </div>
-                    <?php } ?>
+                <div class="collection-item" style="cursor: pointer;" onclick="location.href='../room_view/index.php?room_id=<?php echo $room["room_id"] ?>'"><span style="display: inline-block; width: calc(100% - 93px);"><?php echo $room["name"] ?></span>
+                    <span class="badge" style="margin: 0">
+                        <?php if ($room["room_code"] != null) { ?>
+                            <i class="red-text material-icons" onclick="event.stopPropagation(); location.href='./index.php?action=close_room&room_id=<?php echo $room["room_id"] ?>'">close</i>
+                        <?php }  ?>
+                        <i class="material-icons black-text" onclick="event.stopPropagation(); showDesc(<?php echo $room["room_id"] ?>, '<?php echo addslashes($room["name"]) ?>', '<?php echo addslashes($room["room_desc"]) ?>')">info</i>
+                        <i class="material-icons red-text" onclick="event.stopPropagation(); deleteRoom(<?php echo $room["room_id"] ?>)">delete</i>
+                    </span>
+                </div>
+                <?php } ?>
             </div>
             <div class="center-align">
                 <a href="#create-modal" class="btn btn-large blue lighten-1 waves-effect waves-light modal-trigger">Create</a>
@@ -24,7 +24,7 @@
             <h3 class="center-align">My Joined Rooms</h3>
             <div class="collection">
                 <?php foreach ($joined_rooms as $room) { ?>
-                    <div class="collection-item" style="cursor: pointer;" onclick="location.href='./index.php?action=join_room_again&room_code=<?php echo $room["room_code"] ?>'"><?php echo $room["name"] ?><div class="secondary-content"><a class="material-icons red-text" href="./index.php?action=leave_room&room_id=<?php echo $room["room_id"] ?>">exit_to_app</a><a class="material-icons black-text" onclick="event.stopPropagation(); showJoinedDesc('<?php echo addslashes($room["name"]) ?>', '<?php echo addslashes($room["room_desc"]) ?>')">info</a></div></div>
+                    <div class="collection-item" style="cursor: pointer;" onclick="location.href='./index.php?action=join_room_again&room_code=<?php echo $room["room_code"] ?>'"><span style="display: inline-block; width: calc(100% - 63px)"><?php echo $room["name"] ?></span><span class="badge" style="margin: 0"><a class="material-icons red-text" href="./index.php?action=leave_room&room_id=<?php echo $room["room_id"] ?>">exit_to_app</a><a class="material-icons black-text" onclick="event.stopPropagation(); showJoinedDesc('<?php echo addslashes($room["name"]) ?>', '<?php echo addslashes($room["room_desc"]) ?>')">info</a></span></div>
                 <?php } ?>
             </div>
             <div class="center-align">
