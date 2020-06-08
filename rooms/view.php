@@ -4,10 +4,14 @@
             <h3 class="center-align">My Rooms</h3>
             <div class="collection">
                 <?php foreach ($rooms as $room) { ?>
-                    <div class="collection-item" style="cursor: pointer;" onclick="location.href='../room_view/index.php?room_id=<?php echo $room["room_id"] ?>'"><?php echo $room["name"] ?><a class="right" href="#" onclick="event.stopPropagation(); showDesc(<?php echo $room["room_id"] ?>, '<?php echo addslashes($room["name"]) ?>', '<?php echo addslashes($room["room_desc"]) ?>')"><i class="material-icons black-text">info</i></a>
-                        <?php if ($room["room_code"] != null) { ?>
-                            <i style="cursor: pointer; margin-right:2%" class="red-text material-icons right" onclick="event.stopPropagation(); location.href='./index.php?action=close_room&room_id=<?php echo $room["room_id"] ?>'">close</i>
-                        <?php }  ?>
+                    <div class="collection-item" style="cursor: pointer;" onclick="location.href='../room_view/index.php?room_id=<?php echo $room["room_id"] ?>'"><?php echo $room["name"] ?>
+                        <span class="badge">
+                            <?php if ($room["room_code"] != null) { ?>
+                                <i class="red-text material-icons" onclick="event.stopPropagation(); location.href='./index.php?action=close_room&room_id=<?php echo $room["room_id"] ?>'">close</i>
+                            <?php }  ?>
+                            <i class="material-icons black-text" onclick="event.stopPropagation(); showDesc(<?php echo $room["room_id"] ?>, '<?php echo addslashes($room["name"]) ?>', '<?php echo addslashes($room["room_desc"]) ?>')">info</i>
+                            <i class="material-icons red-text" onclick="event.stopPropagation(); deleteRoom(<?php echo $room["room_id"] ?>)">delete</i>
+                        </span>
                     </div>
                     <?php } ?>
             </div>
@@ -117,5 +121,9 @@
         $("#mini-info-modal #view-room-name").text(name);
         $("#mini-info-modal #view-room-desc").text(desc);
         $("#mini-info-modal").modal("open");
+    }
+
+    function deleteRoom(room_id) {
+        M.toast({html: "Delete Room? <a class='btn btn-flat red-text' href='./index.php?action=delete_room&room_id=" + room_id + "'>Delete</a>", displayLength: 10000})
     }
 </script>

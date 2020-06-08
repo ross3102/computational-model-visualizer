@@ -105,17 +105,19 @@ function delete_question($question_id){
     }
 }
 
-function update_room($id, $name, $desc){
+function update_room($id, $name, $desc, $owner_id){
     global $db;
     try {
         $query = "UPDATE room
                     SET room_desc = :desc,
                     name = :name
-                    WHERE room_id = :room_id";
+                    WHERE room_id = :room_id
+                    AND owner_id = :owner_id";
         $statement = $db->prepare($query);
         $statement->bindValue(":desc", $desc);
         $statement->bindValue(":name", $name);
         $statement->bindValue(":room_id", $id);
+        $statement->bindValue(":owner_id", $owner_id);
         $statement->execute();
         $statement->closeCursor();
     } catch (PDOException $e){
@@ -455,13 +457,31 @@ function delete_student($student_id, $room_id) {
         exit();
     }
 }
-function close_room($room_id) {
+
+function close_room($room_id, $owner_id) {
     global $db;
 
     try {
-        $query = "delete from room_user_xref where room_id = :room_id; update room set room_code = null where room_id = :room_id";
+        $query = "delete from room_user_xref where room_id = :room_id and (select owner_id from room where room_id=:room_id) = :owner_id; update room set room_code = null where room_id = :room_id and owner_id = :owner_id";
         $statement = $db->prepare($query);
         $statement->bindValue(":room_id", $room_id);
+        $statement->bindValue(":owner_id", $owner_id);
+        $statement->execute();
+        $statement->closeCursor();
+    } catch(PDOException $e) {
+        echo $e;
+        exit();
+    }
+}
+
+function delete_room($room_id, $owner_id) {
+    global $db;
+
+    try {
+        $query = "delete from room where room_id = :room_id and owner_id = :owner_id";
+        $statement = $db->prepare($query);
+        $statement->bindValue(":room_id", $room_id);
+        $statement->bindValue(":owner_id", $owner_id);
         $statement->execute();
         $statement->closeCursor();
     } catch(PDOException $e) {
