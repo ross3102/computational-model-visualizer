@@ -3,8 +3,11 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 <meta name="google-signin-client_id" content="360547850019-c9i47eme2popofmrdfeq6315n4diug17.apps.googleusercontent.com">
-
-<div class="g-signin2" id="google-signin"></div>
+<div class="center-align">
+    <h1>Computational Model Visualizer</h1>
+    <br>
+    <div style="margin: 0 auto" class="btn btn-large waves-effect white g-signin2" id="google-signin"></div>
+</div>
 
 
 <script>
