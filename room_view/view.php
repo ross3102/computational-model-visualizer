@@ -21,7 +21,7 @@ generateHeader(""); ?>
             <a href="./index.php?action=create&room_id=<?php echo $room_id ?>" class="btn btn-large waves-effect waves-light blue lighten-1"><?php echo $room["room_code"] == null ? "Open Room": "View Members/Scores" ?></a>
             <div class="modal" id="writetests">
                 <div class="modal-content">
-                    <h4 class="modal-header">Write a Test Case!</h4>
+                    <h4 class="modal-header">New Test Case</h4>
                         <form action="./index.php" method="post" id="addtest">
                             <input type="hidden" name="action" value="add_case">
                             <input type="hidden" name="question_id" id="question_id">
@@ -31,8 +31,12 @@ generateHeader(""); ?>
                                 <label for="test_case">Test Input</label>
                             </div>
                             <div class="input-field">
-                                <input type="text" name="pass" id="pass">
-                                <label for="pass">Pass or Fail (P/F)</label>
+                                <p>
+                                    <label>
+                                        <input type="checkbox" name="pass">
+                                        <span>Should Pass?</span>
+                                    </label>
+                                </p>
                             </div>
                         </form>
                 </div>

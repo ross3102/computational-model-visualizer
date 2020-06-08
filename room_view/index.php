@@ -39,7 +39,7 @@ switch ($action) {
         $question_id = filter_input(INPUT_POST, "question_id");
         $room_id = filter_input(INPUT_POST, "room_id");
         $test_input = filter_input(INPUT_POST, "test_input");
-        $pass = filter_input(INPUT_POST, "pass") == "P";
+        $pass = filter_input(INPUT_POST, "pass") ? "1": "0";
         add_test_cases($question_id, $test_input, $pass);
         header("Location: ./index.php?room_id=" . $room_id);
         break;

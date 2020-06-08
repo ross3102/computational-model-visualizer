@@ -20,7 +20,7 @@
                     <h3 class="center-align">My Joined Rooms</h3>
                     <div class="collection">
                         <?php foreach ($joined_rooms as $room) { ?>
-                            <div class="collection-item" style="cursor: pointer;" onclick="location.href='./index.php?action=join_room_again&room_code=<?php echo $room["room_code"] ?>'"><?php echo $room["name"] ?><div class="secondary-content"><a class="material-icons red-text" href="./index.php?action=leave_room&room_id=<?php echo $room["room_id"] ?>">exit_to_app</a></div></div>
+                            <div class="collection-item" style="cursor: pointer;" onclick="location.href='./index.php?action=join_room_again&room_code=<?php echo $room["room_code"] ?>'"><?php echo $room["name"] ?><div class="secondary-content"><a class="material-icons red-text" href="./index.php?action=leave_room&room_id=<?php echo $room["room_id"] ?>">exit_to_app</a><a class="material-icons black-text" onclick="event.stopPropagation(); showJoinedDesc('<?php echo addslashes($room["name"]) ?>', '<?php echo addslashes($room["room_desc"]) ?>')">info</a></div></div>
                         <?php } ?>
                     </div>
                 </div>
@@ -95,6 +95,17 @@
         </div>
     </div>
 
+    <div class="modal" id="mini-info-modal">
+        <div class="modal-content">
+            <h4 class="modal-header">Room Info</h4>
+            <p style="font-weight: bold" id="view-room-name"></p>
+            <p id="view-room-desc"></p>
+        </div>
+        <div class="modal-footer">
+            <a class="modal-close waves-effect waves-green btn-flat red-text">Close</a>
+        </div>
+    </div>
+
 <?php generateFooter() ?>
 
 <script>
@@ -105,5 +116,11 @@
 
         $("#info-modal").modal("open");
         M.updateTextFields();
+    }
+
+    function showJoinedDesc(name, desc) {
+        $("#mini-info-modal #view-room-name").text(name);
+        $("#mini-info-modal #view-room-desc").text(desc);
+        $("#mini-info-modal").modal("open");
     }
 </script>
