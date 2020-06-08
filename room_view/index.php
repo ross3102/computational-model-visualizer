@@ -66,5 +66,6 @@ switch ($action) {
         $room_id = filter_input(INPUT_GET, "room_id");
         $room = get_room_by_id($room_id);
         $user_list = get_users_by_room($room_id);
+        $questions = get_questions_by_room($room_id);
         include 'members.php';
 }

@@ -1,11 +1,19 @@
 <?php
 
-function get_machines() {
+function get_machines($question_id) {
     global $db;
 
     try {
-        $query = "SELECT * FROM machine";
+        $query = "SELECT * FROM (
+                      SELECT u.*, q.* FROM question q, room r, room_user_xref x, user u
+                        WHERE q.room_id = r.room_id
+                        AND x.room_id = r.room_id
+                        AND x.user_id = u.user_id
+                        AND q.question_id = :question_id) u
+                    LEFT JOIN machine m ON m.creator_id = u.user_id AND m.question_id = u.question_id
+                    ORDER BY u.last_name, u.first_name";
         $statement = $db->prepare($query);
+        $statement->bindValue(":question_id", $question_id);
         $statement->execute();
         $result = $statement->fetchAll();
         $statement->closeCursor();
@@ -297,7 +305,8 @@ function get_users_by_room($room_id) {
     try {
         $query = "select first_name, last_name from user, room_user_xref
               where room_id = :room_id
-              and user.user_id = room_user_xref.user_id";
+              and user.user_id = room_user_xref.user_id
+              order by last_name, first_name";
 
         $statement = $db->prepare($query);
         $statement->bindValue(":room_id", $room_id);

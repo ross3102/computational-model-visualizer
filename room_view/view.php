@@ -8,8 +8,8 @@ generateHeader(""); ?>
         <h5 style="text-decoration: underline;">Questions</h5>
         <ul class="collection">
             <?php foreach ($questions as $question) { ?>
-                <li class="collection-item"><?php echo $question["text"] ?>
-                    <span class="badge">
+                <li class="collection-item"><span style="display: inline-block; width: calc(100% - 65px);"><?php echo $question["text"] ?></span>
+                    <span class="badge" style="margin: 0;">
                         <a onclick="show_test(<?php echo $question["question_id"] ?>)" style="cursor: pointer"><i class="material-icons blue-text">assignment</i></a>
                         <a href="./index.php?action=delete_question&question_id=<?php echo $question["question_id"] ?>&room_id=<?php echo $room_id ?>"><i class="material-icons red-text">delete</i></a></span></li>
             <?php } ?>
