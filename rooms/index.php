@@ -30,19 +30,25 @@ switch ($action) {
         break;
     case "edit_room":
         $id = filter_input(INPUT_POST, "room_id");
-        $name = filter_input(INPUT_POST, "room_name");
-        $desc = filter_input(INPUT_POST, "room_desc");
-        update_room($id, $name, $desc, $current_user["user_id"]);
+        if (is_owner($id, $current_user["user_id"])) {
+            $name = filter_input(INPUT_POST, "room_name");
+            $desc = filter_input(INPUT_POST, "room_desc");
+            update_room($id, $name, $desc);
+        }
         header("Location: ./index.php");
         break;
     case "close_room":
         $room_id = filter_input(INPUT_GET, "room_id");
-        close_room($room_id, $current_user["user_id"]);
+        if (is_owner($room_id, $current_user["user_id"])) {
+            close_room($room_id);
+        }
         header("Location: ./index.php");
         break;
     case "delete_room":
         $room_id = filter_input(INPUT_GET, "room_id");
-        delete_room($room_id, $current_user["user_id"]);
+        if (is_owner($room_id, $current_user["user_id"])) {
+            delete_room($room_id);
+        }
         header("Location: ./index.php");
         break;
     case "leave_room":

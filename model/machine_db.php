@@ -39,6 +39,7 @@ function get_all_machine_types() {
         exit();
     }
 }
+
 function add_question ($id, $question, $machine_type){
     global $db;
     try {
@@ -105,19 +106,52 @@ function delete_question($question_id){
     }
 }
 
-function update_room($id, $name, $desc, $owner_id){
+function is_owner($room_id, $owner_id) {
+    global $db;
+    try {
+        $query = "SELECT owner_id FROM room
+                    WHERE room_id = :room_id";
+        $statement = $db->prepare($query);
+        $statement->bindValue(":room_id", $room_id);
+        $statement->execute();
+        $result = $statement->fetch();
+        $statement->closeCursor();
+        return $result["owner_id"] == $owner_id;
+    } catch (PDOException $e){
+        echo $e;
+        exit();
+    }
+}
+
+function is_question_owner($question_id, $owner_id) {
+    global $db;
+    try {
+        $query = "SELECT owner_id FROM room r, question q
+                    WHERE r.room_id = q.room_id
+                    AND question_id = :question_id";
+        $statement = $db->prepare($query);
+        $statement->bindValue(":question_id", $question_id);
+        $statement->execute();
+        $result = $statement->fetch();
+        $statement->closeCursor();
+        return $result["owner_id"] == $owner_id;
+    } catch (PDOException $e){
+        echo $e;
+        exit();
+    }
+}
+
+function update_room($id, $name, $desc){
     global $db;
     try {
         $query = "UPDATE room
                     SET room_desc = :desc,
                     name = :name
-                    WHERE room_id = :room_id
-                    AND owner_id = :owner_id";
+                    WHERE room_id = :room_id";
         $statement = $db->prepare($query);
         $statement->bindValue(":desc", $desc);
         $statement->bindValue(":name", $name);
         $statement->bindValue(":room_id", $id);
-        $statement->bindValue(":owner_id", $owner_id);
         $statement->execute();
         $statement->closeCursor();
     } catch (PDOException $e){
@@ -458,14 +492,13 @@ function delete_student($student_id, $room_id) {
     }
 }
 
-function close_room($room_id, $owner_id) {
+function close_room($room_id) {
     global $db;
 
     try {
-        $query = "delete from room_user_xref where room_id = :room_id and (select owner_id from room where room_id=:room_id) = :owner_id; update room set room_code = null where room_id = :room_id and owner_id = :owner_id";
+        $query = "delete from room_user_xref where room_id = :room_id; update room set room_code = null where room_id = :room_id";
         $statement = $db->prepare($query);
         $statement->bindValue(":room_id", $room_id);
-        $statement->bindValue(":owner_id", $owner_id);
         $statement->execute();
         $statement->closeCursor();
     } catch(PDOException $e) {
@@ -474,14 +507,13 @@ function close_room($room_id, $owner_id) {
     }
 }
 
-function delete_room($room_id, $owner_id) {
+function delete_room($room_id) {
     global $db;
 
     try {
-        $query = "delete from room where room_id = :room_id and owner_id = :owner_id";
+        $query = "delete from room where room_id = :room_id";
         $statement = $db->prepare($query);
         $statement->bindValue(":room_id", $room_id);
-        $statement->bindValue(":owner_id", $owner_id);
         $statement->execute();
         $statement->closeCursor();
     } catch(PDOException $e) {
