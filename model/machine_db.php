@@ -24,6 +24,27 @@ function get_machines($question_id) {
     }
 }
 
+function get_answers($room_id, $user_id) {
+    global $db;
+
+    try {
+        $query = "SELECT * FROM question q
+                    LEFT JOIN (SELECT * FROM machine WHERE creator_id = :user_id) m ON m.question_id = q.question_id
+                    WHERE q.room_id = :room_id
+                    ORDER BY q.question_id";
+        $statement = $db->prepare($query);
+        $statement->bindValue(":room_id", $room_id);
+        $statement->bindValue(":user_id", $user_id);
+        $statement->execute();
+        $result = $statement->fetchAll();
+        $statement->closeCursor();
+        return $result;
+    } catch (PDOException $e) {
+        echo $e;
+        exit();
+    }
+}
+
 function get_all_machine_types() {
     global $db;
 
