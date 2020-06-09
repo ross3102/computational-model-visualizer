@@ -652,9 +652,6 @@ generateHeader($head); ?>
                 transitions: transitionString,
                 end_state: endString,
                 correct: correct
-            },
-            success: function () {
-                M.toast({html: "Saved"})
             }
         });
     }
@@ -747,7 +744,7 @@ generateHeader($head); ?>
     }
 
     function load() {
-        input = prompt("Enter an input to run");
+        input = prompt("Enter an input to run") || "";
         tape.load(input);
         updateTape();
         reset();
