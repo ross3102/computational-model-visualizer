@@ -12,7 +12,7 @@ generateHeader(""); ?>
                         <?php
                         $total = 0;
                         $max_total = 0;
-                        foreach (get_answers($room_id, $current_user["user_id"]) as $answer) {
+                        foreach (get_answers($room_id, $member["user_id"]) as $answer) {
                             $max_total += count(get_test_cases($answer["question_id"]));
                             if (isset($answer["score"]))
                                 $total += $answer["score"];
@@ -24,7 +24,7 @@ generateHeader(""); ?>
                         <div class="collapsible-header"><?php echo $member["last_name"] . ", " . $member["first_name"] ?><span class="badge"><?php echo $total == -1 ? "Not Finished": ($total . "/" . $max_total) ?></span></div>
                         <div class="collapsible-body">
                             <ul class="collection" style="border: 1px solid lightgray">
-                                <?php foreach (get_answers($room_id, $current_user["user_id"]) as $answer) {
+                                <?php foreach (get_answers($room_id, $member["user_id"]) as $answer) {
                                     $max_score = count(get_test_cases($answer["question_id"])); ?>
                                     <li class="collection-item">
                                         <span style="display: inline-block; width: calc(100% - 110px)"><?php echo $answer["text"] ?></span>
