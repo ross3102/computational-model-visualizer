@@ -4,7 +4,7 @@ Computational model visualizer is a web application designed for the visualizati
 
 ## Setup
 
-Our project uses a composer.json file that holds the dependences. To install these files, composer needs to be installed locally, which can be done from either the composer website or from terminal. To install the dependencies, run `composer install` on your terminal, or look to see if your text editor provides the option to install them for you.
+Our project uses a composer.json file that holds the dependences. To install these files, composer needs to be installed locally, which can be done from either the composer website or from terminal. To install the dependencies, run `composer install`, or look to see if your IDE provides the option to install them for you.
 
 ## Instructions
 
@@ -28,12 +28,12 @@ To execute your machine, first load an input with the "load input" button, and t
 
 This project was created by a group effort from these four people:
 
-Nicholas Levin: nicklevin02@gmail.com
-
 Ross Newman: rzn3102@gmail.com
 
-Andrew Kum: andrew3840@gmail.com
+Nicholas Levin: nicklevin02@gmail.com
 
 Sebastian Wittrock: sebastianwittrock927@gmail.com
 
-Please reach out to any of these people for further questions/explainations!
+Andrew Kum: andrew3840@gmail.com
+
+Please reach out to any of these people for further questions/explanations!
